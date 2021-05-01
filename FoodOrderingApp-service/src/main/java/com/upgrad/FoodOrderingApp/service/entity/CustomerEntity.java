@@ -3,16 +3,18 @@ package com.upgrad.FoodOrderingApp.service.entity;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.List;
 
 @Entity
 @Table(name = "customer")
+@NamedQueries({@NamedQuery(name = "ContactNumber",query = "SELECT c FROM CustomerEntity c WHERE c.contactNumber = :contactNumber")
+})
 public class CustomerEntity {
 
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @NotNull
-    private Integer id;
+    private int id;
 
 
     @Column(name = "uuid")
@@ -47,6 +49,10 @@ public class CustomerEntity {
     @NotNull
     @Size(max = 255)
     private String salt;
+
+
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    private List<CustomerAuthEntity> authTokens;
 
     public CustomerEntity() {
     }
@@ -115,6 +121,14 @@ public class CustomerEntity {
         this.salt = salt;
     }
 
+    public List<CustomerAuthEntity> getAuthTokens() {
+        return authTokens;
+    }
+
+    public void setAuthTokens(List<CustomerAuthEntity> authTokens) {
+        this.authTokens = authTokens;
+    }
+
     public String toString() {
         return "CustomerEntity{" +
                 "id=" + id +
@@ -127,6 +141,7 @@ public class CustomerEntity {
                 ", salt='" + salt + '\'' +
                 '}';
     }
+
 
 
 }

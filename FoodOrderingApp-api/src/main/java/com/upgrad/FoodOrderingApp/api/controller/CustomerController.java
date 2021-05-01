@@ -1,18 +1,24 @@
 package com.upgrad.FoodOrderingApp.api.controller;
 
 
+import com.upgrad.FoodOrderingApp.api.model.LoginResponse;
+import com.upgrad.FoodOrderingApp.api.model.LogoutResponse;
 import com.upgrad.FoodOrderingApp.service.businness.CustomerBusinessService;
+import com.upgrad.FoodOrderingApp.service.entity.CustomerAuthEntity;
 import com.upgrad.FoodOrderingApp.service.entity.CustomerEntity;
+import com.upgrad.FoodOrderingApp.service.exception.AuthenticationFailedException;
+import com.upgrad.FoodOrderingApp.service.exception.AuthorizationFailedException;
 import com.upgrad.FoodOrderingApp.service.exception.SignUpRestrictedException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import com.upgrad.FoodOrderingApp.api.model.SignupCustomerRequest;
 import com.upgrad.FoodOrderingApp.api.model.SignupCustomerResponse;
+
+import java.util.Base64;
 
 @RestController
 @RequestMapping
@@ -28,32 +34,44 @@ public class CustomerController {
 
         final CustomerEntity newCustomer = new CustomerEntity();
 
+
+        CustomerEntity existingCustomerEntity = customerBusinessService.getUserByContactNumber(signupCustomerRequest.getContactNumber());
+
+        if (existingCustomerEntity != null) {
+            throw new SignUpRestrictedException("SGR-001", "This contact number is already registered! Try other contact number.");
+        }
+
         boolean emptyFieldFound = false;
 
-        if (!signupCustomerRequest.getFirstName().equals("")) {
+        if (signupCustomerRequest.getFirstName() != null) {
             newCustomer.setFirstName(signupCustomerRequest.getFirstName());
         }
         else {
             emptyFieldFound = true;
         }
 
-        newCustomer.setLastName(signupCustomerRequest.getLastName());
+        if (signupCustomerRequest.getLastName() != null) {
+            newCustomer.setLastName(signupCustomerRequest.getLastName());
+        }
+        else {
+            newCustomer.setLastName("");
+        }
 
-        if(!signupCustomerRequest.getEmailAddress().equals("")) {
+        if(signupCustomerRequest.getEmailAddress() != null) {
             newCustomer.setEmail(signupCustomerRequest.getEmailAddress());
         }
         else {
             emptyFieldFound = true;
         }
 
-        if(!signupCustomerRequest.getPassword().equals("")) {
+        if(signupCustomerRequest.getPassword() != null) {
             newCustomer.setPassword(signupCustomerRequest.getPassword());
         }
         else {
             emptyFieldFound = true;
         }
 
-        if(!signupCustomerRequest.getContactNumber().equals("")) {
+        if(signupCustomerRequest.getContactNumber() != null) {
             newCustomer.setContactNumber(signupCustomerRequest.getContactNumber());
         }
         else {
@@ -63,14 +81,108 @@ public class CustomerController {
         if (emptyFieldFound) {
             throw new SignUpRestrictedException("SGR-005", "Except last name all fields should be filled");
         }
-        else {
-            CustomerEntity savedCustomer = customerBusinessService.customerSignup(newCustomer);
+
+        if(!customerBusinessService.isEmailValid(signupCustomerRequest.getEmailAddress())) {
+            throw new SignUpRestrictedException("SGR-002", "Invalid email-id format!");
         }
+        if (!customerBusinessService.isContactNumberValid(signupCustomerRequest.getContactNumber())) {
+            throw new SignUpRestrictedException("SGR-003", "Invalid contact number!");
+        }
+        if(!customerBusinessService.isPasswordValid(signupCustomerRequest.getPassword())) {
+            throw new SignUpRestrictedException("SGR-004", "Weak password!");
+        }
+
+            CustomerEntity savedCustomer = customerBusinessService.customerSignup(newCustomer);
 
         SignupCustomerResponse signupCustomerResponse = new SignupCustomerResponse().id(savedCustomer.getUuid()).status("CUSTOMER SUCCESSFULLY REGISTERED");
         return new ResponseEntity<SignupCustomerResponse>(signupCustomerResponse, HttpStatus.CREATED);
 
     }
+
+
+    @PostMapping(path = "/customer/login", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<LoginResponse> customerLogin(@RequestHeader(name = "authorization") final String authorization)
+            throws AuthenticationFailedException {
+
+        String encodedString = getSignInToken(authorization); // extract base64 encoded username and password
+
+        String contactNumber = "", password = "";
+
+        try {
+        byte[] array = Base64.getDecoder().decode(encodedString); // decode username and password
+        String usrPsw = new String(array);
+        String[] usrPswArray = usrPsw.split(":"); // split username and password
+            contactNumber = usrPswArray[0];
+            password = usrPswArray[1];
+        } catch (Exception ex) {
+            throw new AuthenticationFailedException("ATH-003", "Incorrect format of decoded customer name and password"); // throw error if authentication String is incorrect
+        }
+
+        CustomerEntity customerWithContactNumber = customerBusinessService.getUserByContactNumber(contactNumber);
+        if (customerWithContactNumber == null) {
+            throw new AuthenticationFailedException("ATH-001","This contact number has not been registered!"); // throw error if contactNumber does not exist
+        }
+        else {
+            if (customerBusinessService.isPasswordCorrect(password, customerWithContactNumber)) {
+                CustomerAuthEntity authEntity = new CustomerAuthEntity();
+//                authEntity.setUuid(customerWithContactNumber.getUuid());
+                authEntity.setCustomer(customerWithContactNumber);
+                CustomerAuthEntity customerAuthEntity = customerBusinessService.saveLoginInfo(authEntity, password);
+                CustomerEntity customerEntity = customerAuthEntity.getCustomer();
+
+
+                HttpHeaders headers = new HttpHeaders();
+                headers.add("access-token","Bearer "+customerAuthEntity.getAccessToken()); // add JWT token in header and return
+
+                return new ResponseEntity<LoginResponse>(new LoginResponse().id(customerEntity.getUuid())
+                        .message("LOGGED IN SUCCESSFULLY")
+                        .firstName(customerEntity.getFirstName())
+                        .lastName(customerEntity.getLastName())
+                        .emailAddress(customerEntity.getEmail())
+                        .contactNumber(customerEntity.getContactNumber()),
+                        headers,
+                        HttpStatus.OK);
+            }
+            else {
+                throw new AuthenticationFailedException("ATH-002","Invalid Credentials"); // throw error if password is wrong
+            }
+        }
+    }
+
+    // logout customer and update log out time in DB
+    @PostMapping(path = "/customer/logout", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<LogoutResponse> customerLogout(@RequestHeader(name = "authorization") final String authToken)
+            throws AuthorizationFailedException {
+
+        String token = getToken(authToken);
+        CustomerEntity customerEntity =  customerBusinessService.checkAuthToken(token);
+        return new ResponseEntity<LogoutResponse>(new LogoutResponse().id(customerEntity.getUuid()).message("LOGGED OUT SUCCESSFULLY"), HttpStatus.OK);
+    }
+
+    // this method extracts the token from the base64 encoded authentication String
+    private String getSignInToken(String authToken) {
+        String token;
+        if (authToken.startsWith("Basic ")) {
+            String [] basicToken = authToken.split("Basic ");
+            token = basicToken[1];
+        } else {
+            token = authToken;
+        }
+        return token;
+    }
+
+    // this method extracts the token from the JWT token string sent in the Request Header
+    private String getToken(String authToken) {
+        String token;
+        if (authToken.startsWith("Bearer ")) {
+            String [] bearerToken = authToken.split("Bearer ");
+            token = bearerToken[1];
+        } else {
+            token = authToken;
+        }
+        return token;
+    }
+
 
 }
 
