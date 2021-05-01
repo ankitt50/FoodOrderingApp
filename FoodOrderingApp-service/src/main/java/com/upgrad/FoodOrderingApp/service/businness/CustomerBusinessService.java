@@ -142,7 +142,7 @@ public class CustomerBusinessService {
 
     // This method checks existing auth token, and then signs out the user if the auth token is found. If the auth token is not found, it displays an error message.
     @Transactional
-    public CustomerEntity checkAuthToken(String authToken) throws AuthorizationFailedException {
+    public CustomerEntity checkAuthToken(String authToken, String endpoint) throws AuthorizationFailedException {
 
 
         CustomerAuthEntity customerAuthEntity = customerDao.checkAuthToken(authToken);
@@ -156,8 +156,35 @@ public class CustomerBusinessService {
             throw new AuthorizationFailedException("ATHR-003", "Your session is expired. Log in again to access this endpoint.");
         }
         else {
-            return customerDao.signOutCustomer(customerAuthEntity);
+            if (endpoint.equals("/customer/logout")) {
+                return customerDao.signOutCustomer(customerAuthEntity);
+            }
+            else {
+                return customerAuthEntity.getCustomer();
+            }
+
         }
     }
 
+    @Transactional
+    public CustomerEntity updateCustomerDetails(CustomerEntity customerEntity, String firstName, String lastName) {
+        if (lastName == null) {
+            customerEntity.setLastName("");
+        }
+        else {
+            customerEntity.setLastName(lastName);
+        }
+
+        customerEntity.setFirstName(firstName);
+
+        return customerDao.updateCustomerDetails(customerEntity);
+    }
+
+    @Transactional
+    public CustomerEntity updateCustomerPassword(CustomerEntity customerEntity, String password) {
+        String[] encryptedPasswordAndSalt = cryptographyProvider.encrypt(customerEntity.getPassword());
+        customerEntity.setSalt(encryptedPasswordAndSalt[0]);
+        customerEntity.setPassword(encryptedPasswordAndSalt[1]);
+        return customerDao.updateCustomerDetails(customerEntity);
+    }
 }

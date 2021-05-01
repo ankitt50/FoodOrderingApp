@@ -56,4 +56,9 @@ public class CustomerDao {
         return customerAuthEntity.getCustomer();
     }
 
+    public CustomerEntity updateCustomerDetails(CustomerEntity customerEntity) {
+        entityManager.merge(customerEntity);
+        return customerEntity;
+    }
+
 }

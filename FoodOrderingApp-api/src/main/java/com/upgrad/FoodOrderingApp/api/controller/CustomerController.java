@@ -1,22 +1,20 @@
 package com.upgrad.FoodOrderingApp.api.controller;
 
 
-import com.upgrad.FoodOrderingApp.api.model.LoginResponse;
-import com.upgrad.FoodOrderingApp.api.model.LogoutResponse;
+import com.upgrad.FoodOrderingApp.api.model.*;
 import com.upgrad.FoodOrderingApp.service.businness.CustomerBusinessService;
 import com.upgrad.FoodOrderingApp.service.entity.CustomerAuthEntity;
 import com.upgrad.FoodOrderingApp.service.entity.CustomerEntity;
 import com.upgrad.FoodOrderingApp.service.exception.AuthenticationFailedException;
 import com.upgrad.FoodOrderingApp.service.exception.AuthorizationFailedException;
 import com.upgrad.FoodOrderingApp.service.exception.SignUpRestrictedException;
+import com.upgrad.FoodOrderingApp.service.exception.UpdateCustomerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.upgrad.FoodOrderingApp.api.model.SignupCustomerRequest;
-import com.upgrad.FoodOrderingApp.api.model.SignupCustomerResponse;
 
 import java.util.Base64;
 
@@ -155,8 +153,55 @@ public class CustomerController {
             throws AuthorizationFailedException {
 
         String token = getToken(authToken);
-        CustomerEntity customerEntity =  customerBusinessService.checkAuthToken(token);
+        CustomerEntity customerEntity =  customerBusinessService.checkAuthToken(token, "/customer/logout");
         return new ResponseEntity<LogoutResponse>(new LogoutResponse().id(customerEntity.getUuid()).message("LOGGED OUT SUCCESSFULLY"), HttpStatus.OK);
+    }
+
+    // to update customer details
+    @PutMapping(path = "/customer", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<UpdateCustomerResponse> updateCustomerDetails(@RequestHeader(name = "authorization") final String authToken, final UpdateCustomerRequest updateCustomerRequest)
+            throws UpdateCustomerException, AuthorizationFailedException {
+
+        if(updateCustomerRequest.getFirstName() != null) {
+            String token = getToken(authToken);
+            CustomerEntity customerEntity = customerBusinessService.checkAuthToken(token, "/customer");
+            CustomerEntity updatedCustomerEntity = customerBusinessService.updateCustomerDetails(customerEntity, updateCustomerRequest.getFirstName(), updateCustomerRequest.getLastName());
+            return new ResponseEntity<UpdateCustomerResponse>(new UpdateCustomerResponse()
+                    .id(updatedCustomerEntity.getUuid())
+                    .firstName(updatedCustomerEntity.getFirstName())
+                    .lastName(updatedCustomerEntity.getLastName())
+                    .status("CUSTOMER DETAILS UPDATED SUCCESSFULLY")
+                    , HttpStatus.OK);
+
+        }
+        else {
+            throw new UpdateCustomerException("UCR-002","First name field should not be empty"); // throw error if first name field is empty
+        }
+
+    }
+
+    @PutMapping(path = "/customer/password", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<UpdatePasswordResponse> updateCustomerPassword(@RequestHeader(name = "authorization") final String authToken, final UpdatePasswordRequest updatePasswordRequest ) throws AuthorizationFailedException, UpdateCustomerException {
+
+        if(updatePasswordRequest.getNewPassword() == null || updatePasswordRequest.getOldPassword() == null) {
+            throw new UpdateCustomerException("UCR-003","No field should be empty");
+        }
+
+        String token = getToken(authToken);
+        CustomerEntity customerEntity = customerBusinessService.checkAuthToken(token, "/customer/password");
+
+        if(!customerBusinessService.isPasswordValid(updatePasswordRequest.getNewPassword())) {
+            throw new UpdateCustomerException("UCR-001","Weak password!");
+        }
+
+        if(!customerBusinessService.isPasswordCorrect(updatePasswordRequest.getOldPassword(), customerEntity)) {
+            throw new UpdateCustomerException("UCR--004","Incorrect old password!");
+        }
+
+        CustomerEntity updatedCustomerEntity = customerBusinessService.updateCustomerPassword(customerEntity, updatePasswordRequest.getNewPassword());
+
+        return new ResponseEntity<UpdatePasswordResponse>(new UpdatePasswordResponse().id(updatedCustomerEntity.getUuid()).status("CUSTOMER PASSWORD UPDATED SUCCESSFULLY"), HttpStatus.OK);
+
     }
 
     // this method extracts the token from the base64 encoded authentication String
