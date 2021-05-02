@@ -33,8 +33,7 @@ public class CustomerController {
     public ResponseEntity<SignupCustomerResponse> customerSignup(final SignupCustomerRequest signupCustomerRequest) throws SignUpRestrictedException {
 
         final CustomerEntity newCustomer = new CustomerEntity();
-
-
+        
         CustomerEntity existingCustomerEntity = customerBusinessService.getUserByContactNumber(signupCustomerRequest.getContactNumber());
 
         if (existingCustomerEntity != null) {
