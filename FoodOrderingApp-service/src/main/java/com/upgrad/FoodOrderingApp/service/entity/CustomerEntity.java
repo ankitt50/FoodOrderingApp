@@ -3,6 +3,7 @@ package com.upgrad.FoodOrderingApp.service.entity;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -53,6 +54,9 @@ public class CustomerEntity {
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private List<CustomerAuthEntity> authTokens;
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<AddressEntity> address;
 
     public CustomerEntity() {
     }
@@ -127,6 +131,14 @@ public class CustomerEntity {
 
     public void setAuthTokens(List<CustomerAuthEntity> authTokens) {
         this.authTokens = authTokens;
+    }
+
+    public List<AddressEntity> getAddresses() {
+        return address;
+    }
+
+    public void setAddresses(List<AddressEntity> addresses) {
+        this.address = addresses;
     }
 
     public String toString() {
