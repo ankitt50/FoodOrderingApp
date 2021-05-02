@@ -55,7 +55,8 @@ public class CustomerEntity {
     @OneToMany(mappedBy = "customer", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private List<CustomerAuthEntity> authTokens;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+//    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "customer", fetch = FetchType.EAGER)
     private List<AddressEntity> address;
 
     public CustomerEntity() {

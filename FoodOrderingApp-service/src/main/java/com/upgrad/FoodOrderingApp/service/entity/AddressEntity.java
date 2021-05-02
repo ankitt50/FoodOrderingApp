@@ -38,7 +38,13 @@ public class AddressEntity {
     @Column(name = "active")
     private int active;
 
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "address")
+//    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "address")
+    @ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "customer_address",
+            joinColumns = { @JoinColumn(name = "address_id") },
+            inverseJoinColumns = { @JoinColumn(name = "customer_id") }
+    )
     private List<CustomerEntity> customer;
 
 

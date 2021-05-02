@@ -153,8 +153,23 @@ public class AddressController {
             throw new AddressNotFoundException("ANF-003)","No address by this id");
         }
 
-        if(!customerEntity.getContactNumber().equals(addressEntity.getCustomers().get(0).getContactNumber())) {
+        boolean anyUserMatched = false;
+        if(addressEntity.getCustomers().isEmpty()) {
             throw new AuthorizationFailedException("ATHR-004","You are not authorized to view/update/delete any one else's address");
+        }
+        else {
+            for (CustomerEntity e:
+                 addressEntity.getCustomers()) {
+                if(customerEntity.getContactNumber().equals(e.getContactNumber())) {
+                    anyUserMatched = true;
+                }
+            }
+            if (anyUserMatched) {
+
+            }
+            else {
+                throw new AuthorizationFailedException("ATHR-004","You are not authorized to view/update/delete any one else's address");
+            }
         }
 
         AddressEntity deletedAddress = addressBusinessService.deleteAddress(addressEntity);
