@@ -39,7 +39,7 @@ public class AddressEntity {
     private int active;
 
 //    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "address")
-    @ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
     @JoinTable(
             name = "customer_address",
             joinColumns = { @JoinColumn(name = "address_id") },
