@@ -58,7 +58,9 @@ public class RestaurantController {
             responseAddress.setState(state);
             restaurantList.setAddress(responseAddress);
 
-            restaurantList.setCategories(restaurant.getCategoryList().toString());
+            Collections.sort(restaurant.getCategoryList());
+            int len = restaurant.getCategoryList().toString().length();
+            restaurantList.setCategories(restaurant.getCategoryList().toString().substring(1, len-2));
 
             response.addRestaurantsItem(restaurantList);
         }
@@ -94,7 +96,9 @@ public class RestaurantController {
             responseAddress.setState(state);
             restaurantList.setAddress(responseAddress);
 
-            restaurantList.setCategories(restaurant.getCategoryList().toString());
+            Collections.sort(restaurant.getCategoryList());
+            int len = restaurant.getCategoryList().toString().length();
+            restaurantList.setCategories(restaurant.getCategoryList().toString().substring(1, len-2));
 
             response.addRestaurantsItem(restaurantList);
         }
