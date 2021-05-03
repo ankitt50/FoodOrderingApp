@@ -93,6 +93,8 @@ public class CustomerAuthEntity {
         LogoutTime = logoutTime;
     }
 
+
+
     @Override
     public String toString() {
         return "CustomerAuthEntity{" +

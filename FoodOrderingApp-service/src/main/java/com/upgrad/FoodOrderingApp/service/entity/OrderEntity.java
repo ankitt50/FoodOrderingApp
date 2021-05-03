@@ -50,4 +50,102 @@ public class OrderEntity {
     private List<OrderItemEntity> orderItemEntity = new ArrayList<>();
 
 
+    public OrderEntity() {
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    public int getBill() {
+        return bill;
+    }
+
+    public void setBill(int bill) {
+        this.bill = bill;
+    }
+
+    public CouponEntity getCoupon() {
+        return coupon;
+    }
+
+    public void setCoupon(CouponEntity coupon) {
+        this.coupon = coupon;
+    }
+
+    public int getDiscount() {
+        return discount;
+    }
+
+    public void setDiscount(int discount) {
+        this.discount = discount;
+    }
+
+    public CustomerEntity getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(CustomerEntity customer) {
+        this.customer = customer;
+    }
+
+    public AddressEntity getAddress() {
+        return address;
+    }
+
+    public void setAddress(AddressEntity address) {
+        this.address = address;
+    }
+
+    public RestaurantEntity getRestaurant() {
+        return restaurant;
+    }
+
+    public void setRestaurant(RestaurantEntity restaurant) {
+        this.restaurant = restaurant;
+    }
+
+    public PaymentEntity getPayment() {
+        return payment;
+    }
+
+    public void setPayment(PaymentEntity payment) {
+        this.payment = payment;
+    }
+
+    public List<OrderItemEntity> getOrderItemEntity() {
+        return orderItemEntity;
+    }
+
+    public void setOrderItemEntity(List<OrderItemEntity> orderItemEntity) {
+        this.orderItemEntity = orderItemEntity;
+    }
+
+    @Override
+    public String toString() {
+        return "OrderEntity{" +
+                "id=" + id +
+                ", uuid='" + uuid + '\'' +
+                ", bill=" + bill +
+                ", coupon=" + coupon +
+                ", discount=" + discount +
+                ", customer=" + customer +
+                ", address=" + address +
+                ", restaurant=" + restaurant +
+                ", payment=" + payment +
+                ", orderItemEntity=" + orderItemEntity +
+                '}';
+    }
 }

@@ -100,6 +100,14 @@ public class ItemEntity {
         this.category = category;
     }
 
+    public List<OrderItemEntity> getOrderItemEntity() {
+        return orderItemEntity;
+    }
+
+    public void setOrderItemEntity(List<OrderItemEntity> orderItemEntity) {
+        this.orderItemEntity = orderItemEntity;
+    }
+
     @Override
     public String toString() {
         return "ItemEntity{" +
