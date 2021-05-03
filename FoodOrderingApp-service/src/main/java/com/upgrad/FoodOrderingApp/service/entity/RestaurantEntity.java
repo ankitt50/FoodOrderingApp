@@ -5,7 +5,8 @@ import java.util.List;
 
 @Entity
 @Table(name = "restaurant")
-@NamedQueries({@NamedQuery(name = "getAllRestaurants", query = "select s from RestaurantEntity s order by s.customerRating DESC ")})
+@NamedQueries({@NamedQuery(name = "getAllRestaurants", query = "select s from RestaurantEntity s order by s.customerRating DESC "),
+               @NamedQuery(name="getRestaurantsByName", query="select s from RestaurantEntity s where s.restaurantName =:restaurantName")})
 public class RestaurantEntity {
 
     @Id
