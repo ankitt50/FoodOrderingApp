@@ -18,4 +18,9 @@ public class RestaurantService {
     public List<RestaurantEntity> getAllRestaurants() {
         return restaurantDao.getAllRestaurants();
     }
+
+    @Transactional
+    public List<RestaurantEntity> getRestaurantsByName(String restaurantName) {
+        return restaurantDao.getRestaurantsByName(restaurantName);
+    }
 }
