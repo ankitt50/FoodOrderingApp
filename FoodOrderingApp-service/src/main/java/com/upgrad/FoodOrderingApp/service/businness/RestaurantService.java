@@ -1,6 +1,8 @@
 package com.upgrad.FoodOrderingApp.service.businness;
 
+import com.upgrad.FoodOrderingApp.service.dao.CategoryDao;
 import com.upgrad.FoodOrderingApp.service.dao.RestaurantDao;
+import com.upgrad.FoodOrderingApp.service.entity.CategoryEntity;
 import com.upgrad.FoodOrderingApp.service.entity.RestaurantEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,6 +16,9 @@ public class RestaurantService {
     @Autowired
     private RestaurantDao restaurantDao;
 
+    @Autowired
+    private CategoryDao categoryDao;
+
     @Transactional
     public List<RestaurantEntity> getAllRestaurants() {
         return restaurantDao.getAllRestaurants();
@@ -23,4 +28,10 @@ public class RestaurantService {
     public List<RestaurantEntity> getRestaurantsByName(String restaurantName) {
         return restaurantDao.getRestaurantsByName(restaurantName);
     }
+
+    @Transactional
+    public CategoryEntity getCategoryByUuid(String uuid) {
+        return categoryDao.getCategoryByUuid(uuid);
+    }
+
 }

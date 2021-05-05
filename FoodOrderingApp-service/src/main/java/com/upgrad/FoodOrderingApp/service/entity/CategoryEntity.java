@@ -5,7 +5,8 @@ import java.util.List;
 
 @Entity
 @Table(name="category")
-public class CategoryEntity {
+@NamedQueries({@NamedQuery(name = "getCategoryByUuid", query = "select c from CategoryEntity c where c.uuid=:uuid ")})
+public class CategoryEntity implements Comparable<CategoryEntity> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -55,5 +56,10 @@ public class CategoryEntity {
 
     public void setRestaurants(List<RestaurantEntity> restaurants) {
         this.restaurants = restaurants;
+    }
+
+    @Override
+    public int compareTo(CategoryEntity other) {
+        return categoryName.compareTo(other.categoryName);
     }
 }
