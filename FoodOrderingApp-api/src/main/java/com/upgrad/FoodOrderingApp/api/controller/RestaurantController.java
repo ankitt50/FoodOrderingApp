@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,6 +19,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping
@@ -56,11 +58,52 @@ public class RestaurantController {
             responseAddress.setState(state);
             restaurantList.setAddress(responseAddress);
 
-            restaurantList.setCategories(restaurant.getCategoryList().toString());
+            Collections.sort(restaurant.getCategoryList());
+            int len = restaurant.getCategoryList().toString().length();
+            restaurantList.setCategories(restaurant.getCategoryList().toString().substring(1, len-2));
 
             response.addRestaurantsItem(restaurantList);
         }
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/restaurant/name/{restaurant_name}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<RestaurantListResponse> getRestaurantsByName(@PathVariable(name = "restaurant_name") final String restaurantName) {
+        RestaurantListResponse response = new RestaurantListResponse();
+        List<RestaurantEntity> allRestaurants = restaurantService.getAllRestaurants();
+        List<RestaurantEntity> restaurants = allRestaurants.stream().filter(r -> r.getRestaurantName().toLowerCase().contains(restaurantName)).collect(Collectors.toList());
+
+
+        for(RestaurantEntity restaurant : restaurants) {
+            RestaurantList restaurantList = new RestaurantList();
+            restaurantList.setId(UUID.fromString(restaurant.getUuid()));
+            restaurantList.setRestaurantName(restaurant.getRestaurantName());
+            restaurantList.setPhotoURL(restaurant.getPhotoUrl());
+            restaurantList.setCustomerRating(BigDecimal.valueOf(restaurant.getCustomerRating()));
+            restaurantList.setAveragePrice(restaurant.getAveragePriceForTwo());
+            restaurantList.setNumberCustomersRated(restaurant.getNumberOfCustomersRated());
+
+            RestaurantDetailsResponseAddress responseAddress = new RestaurantDetailsResponseAddress();
+            responseAddress.setId(UUID.fromString(restaurant.getAddress().getUuid()));
+            responseAddress.setFlatBuildingName(restaurant.getAddress().getFlatBuildNumber());
+            responseAddress.setLocality(restaurant.getAddress().getLocality());
+            responseAddress.setCity(restaurant.getAddress().getCity());
+            responseAddress.setPincode(restaurant.getAddress().getPincode());
+
+            RestaurantDetailsResponseAddressState state = new RestaurantDetailsResponseAddressState();
+            state.setId(UUID.fromString(restaurant.getAddress().getState().getUuid()));
+            state.setStateName(restaurant.getAddress().getState().getStateName());
+            responseAddress.setState(state);
+            restaurantList.setAddress(responseAddress);
+
+            Collections.sort(restaurant.getCategoryList());
+            int len = restaurant.getCategoryList().toString().length();
+            restaurantList.setCategories(restaurant.getCategoryList().toString().substring(1, len-2));
+
+            response.addRestaurantsItem(restaurantList);
+        }
+        return new ResponseEntity<>(response, HttpStatus.OK);
+
     }
 
     // this method extracts the token from the JWT token string sent in the Request Header
