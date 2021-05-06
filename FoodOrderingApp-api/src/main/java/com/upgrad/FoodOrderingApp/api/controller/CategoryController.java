@@ -6,6 +6,7 @@ import com.upgrad.FoodOrderingApp.api.model.CategoryListResponse;
 import com.upgrad.FoodOrderingApp.api.model.ItemList;
 import com.upgrad.FoodOrderingApp.service.businness.CategoryService;
 import com.upgrad.FoodOrderingApp.service.entity.CategoryEntity;
+import com.upgrad.FoodOrderingApp.service.exception.CategoryNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -14,7 +15,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -40,8 +40,12 @@ public class CategoryController {
     }
 
     @GetMapping(path="/category/{category_id}", produces=MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<CategoryDetailsResponse> getCategoryById(@PathVariable(name="category_id") final String categoryId) {
+    public ResponseEntity<CategoryDetailsResponse> getCategoryById(@PathVariable(name="category_id") final String categoryId) throws CategoryNotFoundException {
+        if (categoryId.isEmpty()) throw new CategoryNotFoundException("CNF-001", "Category id field should not be empty");
+
         CategoryEntity category = categoryService.getCategoryById(categoryId);
+        if (category == null) throw new CategoryNotFoundException("CNF-002", "No category by this id");
+
         CategoryDetailsResponse response = new CategoryDetailsResponse();
         response.setId(UUID.fromString(category.getUuid()));
         response.setCategoryName(category.getCategoryName());

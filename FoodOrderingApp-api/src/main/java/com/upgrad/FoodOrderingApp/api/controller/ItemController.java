@@ -5,6 +5,7 @@ import com.upgrad.FoodOrderingApp.api.model.ItemListResponse;
 import com.upgrad.FoodOrderingApp.service.businness.RestaurantService;
 import com.upgrad.FoodOrderingApp.service.entity.ItemEntity;
 import com.upgrad.FoodOrderingApp.service.entity.RestaurantEntity;
+import com.upgrad.FoodOrderingApp.service.exception.RestaurantNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -24,8 +25,11 @@ public class ItemController {
     RestaurantService restaurantService;
 
     @GetMapping(path = "/item/restaurant/{restaurantId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<ItemListResponse> getItemsByPopularity(@PathVariable(name = "restaurantId") final String restaurantUuid) {
+    public ResponseEntity<ItemListResponse> getItemsByPopularity(@PathVariable(name = "restaurantId") final String restaurantUuid) throws RestaurantNotFoundException {
+        if (restaurantUuid.isEmpty()) throw new RestaurantNotFoundException("RNF-002", "Restaurant id field should not be empty");
+
         RestaurantEntity restaurant = restaurantService.getRestaurantByUuid(restaurantUuid);
+        if (restaurant == null) throw new RestaurantNotFoundException("RNF-001", "No restaurant by this id");
 
         List<ItemEntity> itemList = restaurant.getItemList();
 

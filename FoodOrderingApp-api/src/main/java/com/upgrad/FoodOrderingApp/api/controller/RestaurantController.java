@@ -8,6 +8,9 @@ import com.upgrad.FoodOrderingApp.service.entity.CustomerEntity;
 import com.upgrad.FoodOrderingApp.service.entity.ItemEntity;
 import com.upgrad.FoodOrderingApp.service.entity.RestaurantEntity;
 import com.upgrad.FoodOrderingApp.service.exception.AuthorizationFailedException;
+import com.upgrad.FoodOrderingApp.service.exception.CategoryNotFoundException;
+import com.upgrad.FoodOrderingApp.service.exception.InvalidRatingException;
+import com.upgrad.FoodOrderingApp.service.exception.RestaurantNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -19,7 +22,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping
+@RequestMapping(path = "/api")
 public class RestaurantController {
 
     @Autowired
@@ -38,19 +41,24 @@ public class RestaurantController {
     }
 
     @GetMapping(path = "/restaurant/name/{restaurant_name}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<RestaurantListResponse> getRestaurantsByName(@PathVariable(name = "restaurant_name") final String restaurantName) {
+    public ResponseEntity<RestaurantListResponse> getRestaurantsByName(@PathVariable(name = "restaurant_name") final String restaurantName) throws RestaurantNotFoundException {
+        if(restaurantName.isEmpty()) throw new RestaurantNotFoundException("RNF-003","Restaurant name field should not be empty");
+
         RestaurantListResponse response;
         List<RestaurantEntity> allRestaurants = restaurantService.getAllRestaurants();
         List<RestaurantEntity> restaurants = allRestaurants.stream().filter(r -> r.getRestaurantName().toLowerCase().contains(restaurantName)).collect(Collectors.toList());
 
         response = getRestaurantListResponseFromRestaurantEntity(restaurants);
         return new ResponseEntity<>(response, HttpStatus.OK);
-
     }
 
     @GetMapping(path = "/restaurant/category/{category_id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<RestaurantListResponse> getRestaurantsByCategoryUuid(@PathVariable(name = "category_id") final String categoryUuid) {
+    public ResponseEntity<RestaurantListResponse> getRestaurantsByCategoryUuid(@PathVariable(name = "category_id") final String categoryUuid) throws CategoryNotFoundException {
+        if(categoryUuid.isEmpty()) throw new CategoryNotFoundException("CNF-001","Category id field should not be empty");
+
         CategoryEntity category = restaurantService.getCategoryByUuid(categoryUuid);
+        if (category == null) throw new CategoryNotFoundException("CNF-002", "No category by this id");
+
         List<RestaurantEntity> restaurants = category.getRestaurants();
 
         RestaurantListResponse response;
@@ -58,14 +66,17 @@ public class RestaurantController {
         response = getRestaurantListResponseFromRestaurantEntity(restaurants);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
-
     }
 
-    @GetMapping(path = "/api/restaurant/{restaurant_id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<RestaurantDetailsResponse> getRestaurantByUuid(@PathVariable(name = "restaurant_id") final String restaurantUuid) {
+    @GetMapping(path = "/restaurant/{restaurant_id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<RestaurantDetailsResponse> getRestaurantByUuid(@PathVariable(name = "restaurant_id") final String restaurantUuid) throws RestaurantNotFoundException {
+        if (restaurantUuid.isEmpty()) throw new RestaurantNotFoundException("RNF-002","Restaurant id field should not be empty");
+
         RestaurantDetailsResponse response = new RestaurantDetailsResponse();
 
         RestaurantEntity restaurant = restaurantService.getRestaurantByUuid(restaurantUuid);
+        if (restaurant == null) throw new RestaurantNotFoundException("RNF-001","No restaurant by this id");
+
         response.setId(UUID.fromString(restaurant.getUuid()));
         response.setRestaurantName(restaurant.getRestaurantName());
         response.setPhotoURL(restaurant.getPhotoUrl());
@@ -110,13 +121,20 @@ public class RestaurantController {
     }
 
     @PutMapping(path = "/restaurant/edit/{restaurant_id}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<RestaurantUpdatedResponse> updateRatingByRestaurantId(@RequestHeader(name = "authorization") final String authToken, @RequestHeader(name = "customer_rating") final Double givenCustomerRating, @PathVariable(name = "restaurant_id") final String restaurantUuid) throws AuthorizationFailedException {
+    public ResponseEntity<RestaurantUpdatedResponse> updateRatingByRestaurantId(@RequestHeader(name = "authorization") final String authToken, @RequestHeader(name = "customer_rating") final Integer givenCustomerRating, @PathVariable(name = "restaurant_id") final String restaurantUuid) throws AuthorizationFailedException, RestaurantNotFoundException, InvalidRatingException {
         String token = getToken(authToken);
         customerBusinessService.checkAuthToken(token, "/restaurant/edit/{restaurant_id}");
+
+        if (restaurantUuid.isEmpty()) throw new RestaurantNotFoundException("RNF-002", "Restaurant id field should not be empty");
+
         RestaurantEntity restaurant = restaurantService.getRestaurantByUuid(restaurantUuid);
+        if (restaurant == null) throw new RestaurantNotFoundException("RNF-001", "No restaurant by this id");
+
+        if (givenCustomerRating == null || givenCustomerRating < 1 || givenCustomerRating > 5) throw new InvalidRatingException("IRE-001", "Rating should be in the range of 1 to 5");
+
         int numOfRatings = restaurant.getNumberOfCustomersRated();
         double customerRating = restaurant.getCustomerRating();
-        customerRating = (customerRating*numOfRatings + givenCustomerRating)/(numOfRatings+1);
+        customerRating = (customerRating * numOfRatings + givenCustomerRating)/(numOfRatings+1);
         numOfRatings++;
 
         restaurant.setNumberOfCustomersRated(numOfRatings);
