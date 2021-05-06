@@ -34,4 +34,13 @@ public class RestaurantService {
         return categoryDao.getCategoryByUuid(uuid);
     }
 
+    @Transactional
+    public RestaurantEntity getRestaurantByUuid(String restaurantUuid) {
+        return restaurantDao.getRestaurantsByUuid(restaurantUuid);
+    }
+
+    @Transactional
+    public RestaurantEntity updateRatingOfRestaurant(RestaurantEntity restaurant) {
+        return restaurantDao.updateRatingOfRestaurant(restaurant);
+    }
 }

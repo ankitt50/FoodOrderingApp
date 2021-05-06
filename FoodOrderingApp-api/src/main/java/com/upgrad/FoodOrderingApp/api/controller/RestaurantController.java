@@ -4,21 +4,18 @@ import com.upgrad.FoodOrderingApp.api.model.*;
 import com.upgrad.FoodOrderingApp.service.businness.CustomerBusinessService;
 import com.upgrad.FoodOrderingApp.service.businness.RestaurantService;
 import com.upgrad.FoodOrderingApp.service.entity.CategoryEntity;
+import com.upgrad.FoodOrderingApp.service.entity.CustomerEntity;
+import com.upgrad.FoodOrderingApp.service.entity.ItemEntity;
 import com.upgrad.FoodOrderingApp.service.entity.RestaurantEntity;
+import com.upgrad.FoodOrderingApp.service.exception.AuthorizationFailedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -63,7 +60,78 @@ public class RestaurantController {
         return new ResponseEntity<>(response, HttpStatus.OK);
 
     }
-    
+
+    @GetMapping(path = "/api/restaurant/{restaurant_id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<RestaurantDetailsResponse> getRestaurantByUuid(@PathVariable(name = "restaurant_id") final String restaurantUuid) {
+        RestaurantDetailsResponse response = new RestaurantDetailsResponse();
+
+        RestaurantEntity restaurant = restaurantService.getRestaurantByUuid(restaurantUuid);
+        response.setId(UUID.fromString(restaurant.getUuid()));
+        response.setRestaurantName(restaurant.getRestaurantName());
+        response.setPhotoURL(restaurant.getPhotoUrl());
+        response.setCustomerRating(BigDecimal.valueOf(restaurant.getCustomerRating()));
+        response.setAveragePrice(restaurant.getAveragePriceForTwo());
+        response.setNumberCustomersRated(restaurant.getNumberOfCustomersRated());
+
+        RestaurantDetailsResponseAddress responseAddress = new RestaurantDetailsResponseAddress();
+        responseAddress.setId(UUID.fromString(restaurant.getAddress().getUuid()));
+        responseAddress.setFlatBuildingName(restaurant.getAddress().getFlatBuildNumber());
+        responseAddress.setLocality(restaurant.getAddress().getLocality());
+        responseAddress.setCity(restaurant.getAddress().getCity());
+        responseAddress.setPincode(restaurant.getAddress().getPincode());
+
+        RestaurantDetailsResponseAddressState state = new RestaurantDetailsResponseAddressState();
+        state.setId(UUID.fromString(restaurant.getAddress().getState().getUuid()));
+        state.setStateName(restaurant.getAddress().getState().getStateName());
+        responseAddress.setState(state);
+        response.setAddress(responseAddress);
+
+        List<CategoryList> categoryList = new ArrayList<>();
+        for (CategoryEntity category : restaurant.getCategoryList()) {
+            List<ItemList> itemList = new ArrayList<>();
+            for (ItemEntity categoryItem : category.getItems()) {
+                ItemList item = new ItemList();
+                item.setId(UUID.fromString(categoryItem.getUuid()));
+                item.setItemName(categoryItem.getItemName());
+                item.setItemType(ItemList.ItemTypeEnum.fromValue(categoryItem.getType()));
+                item.setPrice(categoryItem.getPrice());
+                itemList.add(item);
+            }
+
+            CategoryList catList = new CategoryList();
+            catList.setId(UUID.fromString(category.getUuid()));
+            catList.setCategoryName(category.getCategoryName());
+            catList.setItemList(itemList);
+            categoryList.add(catList);
+        }
+
+        response.setCategories(categoryList);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PutMapping(path = "/restaurant/edit/{restaurant_id}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<RestaurantUpdatedResponse> updateRatingByRestaurantId(@RequestHeader(name = "authorization") final String authToken, @RequestHeader(name = "customer_rating") final Double givenCustomerRating, @PathVariable(name = "restaurant_id") final String restaurantUuid) throws AuthorizationFailedException {
+        String token = getToken(authToken);
+        customerBusinessService.checkAuthToken(token, "/restaurant/edit/{restaurant_id}");
+        RestaurantEntity restaurant = restaurantService.getRestaurantByUuid(restaurantUuid);
+        int numOfRatings = restaurant.getNumberOfCustomersRated();
+        double customerRating = restaurant.getCustomerRating();
+        customerRating = (customerRating*numOfRatings + givenCustomerRating)/(numOfRatings+1);
+        numOfRatings++;
+
+        restaurant.setNumberOfCustomersRated(numOfRatings);
+        restaurant.setCustomerRating(customerRating);
+
+        restaurant = restaurantService.updateRatingOfRestaurant(restaurant);
+
+        RestaurantUpdatedResponse restUpd = new RestaurantUpdatedResponse();
+        restUpd.setId(UUID.fromString(restaurant.getUuid()));
+        restUpd.setStatus("RESTAURANT RATING UPDATED SUCCESSFULLY");
+
+        return new ResponseEntity<>(restUpd, HttpStatus.OK);
+    }
+
+
 
     private RestaurantListResponse getRestaurantListResponseFromRestaurantEntity(List<RestaurantEntity> restaurants) {
         RestaurantListResponse response = new RestaurantListResponse();
