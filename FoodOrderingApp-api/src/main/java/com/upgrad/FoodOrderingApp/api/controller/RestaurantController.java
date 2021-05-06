@@ -4,7 +4,6 @@ import com.upgrad.FoodOrderingApp.api.model.*;
 import com.upgrad.FoodOrderingApp.service.businness.CustomerBusinessService;
 import com.upgrad.FoodOrderingApp.service.businness.RestaurantService;
 import com.upgrad.FoodOrderingApp.service.entity.CategoryEntity;
-import com.upgrad.FoodOrderingApp.service.entity.CustomerEntity;
 import com.upgrad.FoodOrderingApp.service.entity.ItemEntity;
 import com.upgrad.FoodOrderingApp.service.entity.RestaurantEntity;
 import com.upgrad.FoodOrderingApp.service.exception.AuthorizationFailedException;
@@ -22,7 +21,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping(path = "/api")
+@RequestMapping(path = "/api")      /* Setting base path to "/api" */
 public class RestaurantController {
 
     @Autowired
@@ -33,7 +32,7 @@ public class RestaurantController {
 
     @GetMapping(path = "/restaurant", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<RestaurantListResponse> getAllRestaurants() {
-        RestaurantListResponse response;
+        RestaurantListResponse response;    /* Response entity created by Swagger plugin */
 
         List<RestaurantEntity> restaurants = restaurantService.getAllRestaurants();
         response = getRestaurantListResponseFromRestaurantEntity(restaurants);
@@ -44,7 +43,7 @@ public class RestaurantController {
     public ResponseEntity<RestaurantListResponse> getRestaurantsByName(@PathVariable(name = "restaurant_name") final String restaurantName) throws RestaurantNotFoundException {
         if(restaurantName.isEmpty()) throw new RestaurantNotFoundException("RNF-003","Restaurant name field should not be empty");
 
-        RestaurantListResponse response;
+        RestaurantListResponse response;    /* Response entity created by Swagger plugin */
         List<RestaurantEntity> allRestaurants = restaurantService.getAllRestaurants();
         List<RestaurantEntity> restaurants = allRestaurants.stream().filter(r -> r.getRestaurantName().toLowerCase().contains(restaurantName)).collect(Collectors.toList());
 
@@ -61,7 +60,7 @@ public class RestaurantController {
 
         List<RestaurantEntity> restaurants = category.getRestaurants();
 
-        RestaurantListResponse response;
+        RestaurantListResponse response;    /* Response entity created by Swagger plugin */
 
         response = getRestaurantListResponseFromRestaurantEntity(restaurants);
 
@@ -120,6 +119,7 @@ public class RestaurantController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    // endpoint for adding rating
     @PutMapping(path = "/restaurant/edit/{restaurant_id}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<RestaurantUpdatedResponse> updateRatingByRestaurantId(@RequestHeader(name = "authorization") final String authToken, @RequestHeader(name = "customer_rating") final Integer givenCustomerRating, @PathVariable(name = "restaurant_id") final String restaurantUuid) throws AuthorizationFailedException, RestaurantNotFoundException, InvalidRatingException {
         String token = getToken(authToken);
@@ -142,15 +142,14 @@ public class RestaurantController {
 
         restaurant = restaurantService.updateRatingOfRestaurant(restaurant);
 
-        RestaurantUpdatedResponse restUpd = new RestaurantUpdatedResponse();
+        RestaurantUpdatedResponse restUpd = new RestaurantUpdatedResponse();    /* Response entity created by Swagger plugin */
         restUpd.setId(UUID.fromString(restaurant.getUuid()));
         restUpd.setStatus("RESTAURANT RATING UPDATED SUCCESSFULLY");
 
         return new ResponseEntity<>(restUpd, HttpStatus.OK);
     }
 
-
-
+    // method for creating RestaurantListResponse object from RestaurantEntity object:
     private RestaurantListResponse getRestaurantListResponseFromRestaurantEntity(List<RestaurantEntity> restaurants) {
         RestaurantListResponse response = new RestaurantListResponse();
         for(RestaurantEntity restaurant : restaurants) {

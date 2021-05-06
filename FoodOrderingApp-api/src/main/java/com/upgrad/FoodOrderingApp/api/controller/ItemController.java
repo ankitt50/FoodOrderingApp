@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collections;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
+@RequestMapping(path = "/api")      /* Setting base path to "/api" */
 public class ItemController {
 
     @Autowired
@@ -35,7 +37,7 @@ public class ItemController {
 
         Collections.sort(itemList);
         ItemListResponse response = new ItemListResponse();
-        for(int i = 0; i < 5; i++) {
+        for(int i = 0; i < 5; i++) {    /* returning the top 5 items */
             ItemEntity item = itemList.get(i);
             ItemList itemL = new ItemList();
             itemL.setId(UUID.fromString(item.getUuid()));

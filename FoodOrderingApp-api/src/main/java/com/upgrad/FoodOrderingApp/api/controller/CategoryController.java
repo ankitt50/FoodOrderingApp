@@ -13,12 +13,14 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.UUID;
 
 @RestController
+@RequestMapping(path = "/api")      /* Setting base path to "/api" */
 public class CategoryController {
 
     @Autowired
@@ -27,7 +29,7 @@ public class CategoryController {
     @GetMapping(path = "/category", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<CategoriesListResponse> getAll() {
         List<CategoryEntity> categories = categoryService.getAll();
-        CategoriesListResponse categoryList = new CategoriesListResponse();
+        CategoriesListResponse categoryList = new CategoriesListResponse();     /* Response entity created by Swagger plugin */
 
         for(CategoryEntity categoryEntity: categories) {
             CategoryListResponse category = new CategoryListResponse();
@@ -46,7 +48,7 @@ public class CategoryController {
         CategoryEntity category = categoryService.getCategoryById(categoryId);
         if (category == null) throw new CategoryNotFoundException("CNF-002", "No category by this id");
 
-        CategoryDetailsResponse response = new CategoryDetailsResponse();
+        CategoryDetailsResponse response = new CategoryDetailsResponse();   /* Response entity created by Swagger plugin */
         response.setId(UUID.fromString(category.getUuid()));
         response.setCategoryName(category.getCategoryName());
         category.getItems().forEach(item -> {
