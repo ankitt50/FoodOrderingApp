@@ -141,7 +141,7 @@ public class CustomerBusinessService {
 
 
     // This method checks existing auth token, and then signs out the user if the auth token is found. If the auth token is not found, it displays an error message.
-    @Transactional
+
     public CustomerEntity checkAuthToken(String authToken, String endpoint) throws AuthorizationFailedException {
 
 

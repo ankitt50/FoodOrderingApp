@@ -2,8 +2,7 @@ package com.upgrad.FoodOrderingApp.service.dao;
 
 import com.upgrad.FoodOrderingApp.service.entity.PaymentEntity;
 import org.springframework.stereotype.Repository;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import javax.persistence.*;
 import java.util.*;
 
 @Repository
@@ -19,5 +18,18 @@ public class PaymentDao {
             return paymentMethods;
         }
         return Collections.emptyList();
+    }
+
+    public PaymentEntity getPaymentByUUID(String paymentUUID) {
+        try {
+            PaymentEntity paymentEntity =
+                    entityManager
+                            .createNamedQuery("getPaymentByUUID", PaymentEntity.class)
+                            .setParameter("paymentUUID", paymentUUID)
+                            .getSingleResult();
+            return paymentEntity;
+        } catch (NoResultException nre) {
+            return null;
+        }
     }
 }

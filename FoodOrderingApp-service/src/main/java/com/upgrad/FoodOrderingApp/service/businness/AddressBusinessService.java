@@ -48,8 +48,9 @@ public class AddressBusinessService {
     }
 
     @Transactional
-    public AddressEntity getAddressByUuid(String uuid) {
-        return addressDao.getAddressByUuid(uuid);
+    public AddressEntity getAddressByUuid(final String uuid) {
+        AddressEntity addressEntity = addressDao.getAddressByUuid(uuid);
+        return addressEntity;
     }
 
     @Transactional

@@ -205,7 +205,7 @@ public class CustomerController {
     }
 
     // this method extracts the token from the base64 encoded authentication String
-    private String getSignInToken(String authToken) {
+    public static String getSignInToken(String authToken) {
         String token;
         if (authToken.startsWith("Basic ")) {
             String [] basicToken = authToken.split("Basic ");
