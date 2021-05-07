@@ -5,7 +5,9 @@ import java.util.List;
 
 @Entity
 @Table(name="category")
-public class CategoryEntity {
+@NamedQueries({@NamedQuery(name = "getCategoryByUuid", query = "select c from CategoryEntity c where c.uuid=:uuid "),
+               @NamedQuery(name="getAll", query="select c from CategoryEntity c")})
+public class CategoryEntity implements Comparable<CategoryEntity> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -19,6 +21,14 @@ public class CategoryEntity {
 
     @ManyToMany(mappedBy = "categoryList")
     private List<RestaurantEntity> restaurants;
+
+    @ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "category_item",
+            joinColumns = { @JoinColumn(name = "category_id") },
+            inverseJoinColumns = { @JoinColumn(name = "item_id") }
+    )
+    private List<ItemEntity> items;
 
     @Override
     public String toString() {
@@ -55,5 +65,18 @@ public class CategoryEntity {
 
     public void setRestaurants(List<RestaurantEntity> restaurants) {
         this.restaurants = restaurants;
+    }
+
+    public List<ItemEntity> getItems() {
+        return items;
+    }
+
+    public void setItems(List<ItemEntity> items) {
+        this.items = items;
+    }
+
+    @Override
+    public int compareTo(CategoryEntity other) {
+        return categoryName.compareTo(other.categoryName);
     }
 }

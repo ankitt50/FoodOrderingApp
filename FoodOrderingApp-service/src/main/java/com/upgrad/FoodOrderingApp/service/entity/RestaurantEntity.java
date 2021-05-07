@@ -6,7 +6,8 @@ import java.util.List;
 @Entity
 @Table(name = "restaurant")
 @NamedQueries({@NamedQuery(name = "getAllRestaurants", query = "select s from RestaurantEntity s order by s.customerRating DESC "),
-               @NamedQuery(name="getRestaurantsByName", query="select s from RestaurantEntity s where s.restaurantName =:restaurantName")})
+               @NamedQuery(name="getRestaurantsByName", query="select s from RestaurantEntity s where s.restaurantName =:restaurantName"),
+               @NamedQuery(name="getRestaurantByUuid", query="select s from RestaurantEntity s where s.uuid=:restaurantUuid")})
 public class RestaurantEntity {
 
     @Id
@@ -24,7 +25,7 @@ public class RestaurantEntity {
     private String photoUrl;
 
     @Column(name = "customer_rating")
-    private float customerRating;
+    private double customerRating;
 
     @Column(name = "average_price_for_two")
     private int averagePriceForTwo;
@@ -43,6 +44,14 @@ public class RestaurantEntity {
             inverseJoinColumns = { @JoinColumn(name = "category_id") }
     )
     private List<CategoryEntity> categoryList;
+
+    @ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "restaurant_item",
+            joinColumns = { @JoinColumn(name = "restaurant_id") },
+            inverseJoinColumns = { @JoinColumn(name = "item_id") }
+    )
+    private List<ItemEntity> itemList;
 
     public int getId() {
         return id;
@@ -76,11 +85,11 @@ public class RestaurantEntity {
         this.photoUrl = photoUrl;
     }
 
-    public float getCustomerRating() {
+    public double getCustomerRating() {
         return customerRating;
     }
 
-    public void setCustomerRating(float customerRating) {
+    public void setCustomerRating(double customerRating) {
         this.customerRating = customerRating;
     }
 
@@ -114,5 +123,13 @@ public class RestaurantEntity {
 
     public void setCategoryList(List<CategoryEntity> categoryList) {
         this.categoryList = categoryList;
+    }
+
+    public List<ItemEntity> getItemList() {
+        return itemList;
+    }
+
+    public void setItemList(List<ItemEntity> itemList) {
+        this.itemList = itemList;
     }
 }
