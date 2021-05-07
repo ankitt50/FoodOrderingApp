@@ -1,44 +1,87 @@
 package com.upgrad.FoodOrderingApp.service.entity;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import java.io.Serializable;
+import com.upgrad.FoodOrderingApp.service.common.ItemType;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 @Entity
 @Table(name = "item")
-public class ItemEntity implements Comparable<ItemEntity> {
-
+@NamedNativeQueries({
+        // Using native query as named queries do not support LIMIT in nested statements.
+        @NamedNativeQuery(
+                name = "topFivePopularItemsByRestaurant",
+                query =
+                        "select * from item where id in "
+                                + "(select item_id from order_item where order_id in "
+                                + "(select id from orders where restaurant_id = ? ) "
+                                + "group by order_item.item_id "
+                                + "order by (count(order_item.order_id)) "
+                                + "desc LIMIT 5)",
+                resultClass = ItemEntity.class)
+})
+@NamedQueries({
+        @NamedQuery(name = "itemByUUID", query = "select i from ItemEntity i where i.uuid=:itemUUID"),
+        @NamedQuery(
+                name = "getAllItemsInCategoryInRestaurant",
+                query =
+                        "select i from ItemEntity i  where id in (select ri.itemId from RestaurantItemEntity ri "
+                                + "inner join CategoryItemEntity ci on ri.itemId = ci.itemId "
+                                + "where ri.restaurantId = (select r.id from RestaurantEntity r where "
+                                + "r.uuid=:restaurantUuid) and ci.categoryId = "
+                                + "(select c.id from CategoryEntity c where c.uuid=:categoryUuid ) )"
+                                + "order by lower(i.itemName) asc")
+})
+public class ItemEntity implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private int id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
-    @Column(name="uuid")
+    @NotNull
+    @Size(max = 200)
+    @Column(name = "uuid", unique = true)
     private String uuid;
 
-    @Column(name="item_name")
+    @NotNull
+    @Size(max = 30)
+    @Column(name = "item_name")
     private String itemName;
 
-    @Column(name="price")
-    private int price;
+    @NotNull
+    @Column(name = "price")
+    private Integer price;
 
-    @Column(name="type")
+    @NotNull
+    @Size(max = 10)
+    @Column(name = "type")
     private String type;
 
-    @ManyToMany(mappedBy = "itemList")
-    private List<RestaurantEntity> restaurants;
+    public ItemEntity() {}
 
-    @ManyToMany(mappedBy = "items")
-    private List<CategoryEntity> categories;
+    public ItemEntity(
+            @NotNull @Size(max = 200) String uuid,
+            @NotNull @Size(max = 30) String itemName,
+            @NotNull Integer price,
+            @NotNull @Size(max = 10) String type) {
+        this.uuid = uuid;
+        this.itemName = itemName;
+        this.price = price;
+        this.type = type;
+    }
 
-    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL)
-    private List<OrderItemEntity> orderItemEntity = new ArrayList<>();
-
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -58,11 +101,11 @@ public class ItemEntity implements Comparable<ItemEntity> {
         this.itemName = itemName;
     }
 
-    public int getPrice() {
+    public Integer getPrice() {
         return price;
     }
 
-    public void setPrice(int price) {
+    public void setPrice(Integer price) {
         this.price = price;
     }
 
@@ -70,36 +113,23 @@ public class ItemEntity implements Comparable<ItemEntity> {
         return type;
     }
 
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public List<RestaurantEntity> getRestaurants() {
-        return restaurants;
-    }
-
-    public void setRestaurants(List<RestaurantEntity> restaurants) {
-        this.restaurants = restaurants;
-    }
-
-    public List<CategoryEntity> getCategories() {
-        return categories;
-    }
-
-    public void setCategories(List<CategoryEntity> categories) {
-        this.categories = categories;
-    }
-
-    public List<OrderItemEntity> getOrderItemEntity() {
-        return orderItemEntity;
-    }
-
-    public void setOrderItemEntity(List<OrderItemEntity> orderItemEntity) {
-        this.orderItemEntity = orderItemEntity;
+    public void setType(ItemType type) {
+        this.type = type.toString();
     }
 
     @Override
-    public int compareTo(ItemEntity other) {
-        return other.getOrderItemEntity().size() - this.getOrderItemEntity().size();
+    public boolean equals(Object obj) {
+        return new EqualsBuilder().append(this, obj).isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder().append(this).hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
     }
 }
+
