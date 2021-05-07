@@ -7,11 +7,12 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
-import java.util.*;
 
+import java.util.*;
 
 @Repository
 public class OrderDao {
@@ -26,6 +27,8 @@ public class OrderDao {
             return null;
         }
     }
+}
+
 
     /**
      * Fetches the orders of the customer in a sorted manner with latest order being on the top. *
