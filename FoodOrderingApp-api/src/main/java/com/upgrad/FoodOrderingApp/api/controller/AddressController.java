@@ -30,6 +30,7 @@ public class AddressController {
     @Autowired
     private CustomerBusinessService customerBusinessService;
 
+    @CrossOrigin
     @RequestMapping(method = RequestMethod.POST, path = "/address",
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -91,6 +92,7 @@ public class AddressController {
 
     }
 
+    @CrossOrigin
     @GetMapping(path = "/address/customer", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<AddressListResponse> getAllSavedAddresses(@RequestHeader(name = "authorization") final String authToken) throws AuthorizationFailedException {
 
@@ -119,6 +121,7 @@ public class AddressController {
 
 
 
+    @CrossOrigin
     @GetMapping(path = "/states", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<StatesListResponse> getAllStates(){
 
@@ -138,6 +141,7 @@ public class AddressController {
         return new ResponseEntity<StatesListResponse>(statesListResponse,HttpStatus.OK);
     }
 
+    @CrossOrigin
     @DeleteMapping(path = "/address/{address_id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<DeleteAddressResponse> deleteAddress(@PathVariable(name = "address_id") final String addressID, @RequestHeader(name = "authorization") final String authToken) throws AuthorizationFailedException, AddressNotFoundException {
         String token = getToken(authToken);

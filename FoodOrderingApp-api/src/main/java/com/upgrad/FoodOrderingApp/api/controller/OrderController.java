@@ -1,6 +1,5 @@
 package com.upgrad.FoodOrderingApp.api.controller;
 
-import com.upgrad.FoodOrderingApp.api.common.Utility;
 import com.upgrad.FoodOrderingApp.api.model.CouponDetailsResponse;
 import com.upgrad.FoodOrderingApp.api.model.CustomerOrderResponse;
 import com.upgrad.FoodOrderingApp.api.model.ItemQuantity;
@@ -60,9 +59,9 @@ public class OrderController {
 
     @Autowired private OrderService orderService;
 
-    @Autowired private CustomerService customerService;
+    @Autowired private CustomerBusinessService customerBusinessService;
 
-    @Autowired private AddressService addressService;
+    @Autowired private AddressBusinessService addressBusinessService;
 
     @Autowired private PaymentService paymentService;
 
@@ -89,9 +88,9 @@ public class OrderController {
             @PathVariable("coupon_name") final String couponName)
             throws AuthorizationFailedException, CouponNotFoundException {
 
-        String accessToken = Utility.getTokenFromAuthorization(authorization);
+        String accessToken = CustomerController.getSignInToken(authorization);
 
-        customerService.getCustomer(accessToken);
+        CustomerEntity customerEntity = customerBusinessService.checkAuthToken(accessToken, "/order/coupon/{coupon_name}");
 
         CouponEntity couponEntity = orderService.getCouponByCouponName(couponName);
 
@@ -119,10 +118,10 @@ public class OrderController {
             @RequestHeader("authorization") final String authorization)
             throws AuthorizationFailedException {
 
-        String accessToken = Utility.getTokenFromAuthorization(authorization);
+        String accessToken = CustomerController.getSignInToken(authorization);
 
         // Identify customer from the access token.
-        CustomerEntity customerEntity = customerService.getCustomer(accessToken);
+        CustomerEntity customerEntity = customerBusinessService.checkAuthToken(accessToken, "/order");
 
         // Get all the orders of the customer.
         List<OrderEntity> ordersOfCustomer =
@@ -175,7 +174,7 @@ public class OrderController {
         String accessToken = CustomerController.getSignInToken(authorization);
 
 
-        CustomerEntity customerEntity = CustomerBusinessService.checkAuthToken(accessToken);
+        CustomerEntity customerEntity = customerBusinessService.checkAuthToken(accessToken, "/order");
 
         CouponEntity couponEntity =
                 orderService.getCouponByCouponId(saveOrderRequest.getCouponId().toString());
@@ -184,7 +183,7 @@ public class OrderController {
                 paymentService.getPaymentByUUID(saveOrderRequest.getPaymentId().toString());
 
         AddressEntity addressEntity =
-                AddressBusinessService.getAddressByUuid(saveOrderRequest.getAddressId(), customerEntity);
+                addressBusinessService.getAddressByUuid(saveOrderRequest.getAddressId());
 
         RestaurantEntity restaurantEntity =
                 restaurantService.getRestaurantByUuid(saveOrderRequest.getRestaurantId().toString());

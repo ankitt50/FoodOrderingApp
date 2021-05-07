@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.Collections;
 import java.util.List;
@@ -26,6 +27,7 @@ public class ItemController {
     @Autowired
     RestaurantService restaurantService;
 
+    @CrossOrigin
     @GetMapping(path = "/item/restaurant/{restaurantId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<ItemListResponse> getItemsByPopularity(@PathVariable(name = "restaurantId") final String restaurantUuid) throws RestaurantNotFoundException {
         if (restaurantUuid.isEmpty()) throw new RestaurantNotFoundException("RNF-002", "Restaurant id field should not be empty");

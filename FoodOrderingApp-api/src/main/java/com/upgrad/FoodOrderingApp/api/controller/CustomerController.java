@@ -26,7 +26,7 @@ public class CustomerController {
     @Autowired
     private CustomerBusinessService customerBusinessService;
 
-
+    @CrossOrigin
     @RequestMapping(method = RequestMethod.POST, path = "/customer/signup", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<SignupCustomerResponse> customerSignup(final SignupCustomerRequest signupCustomerRequest) throws SignUpRestrictedException {
 
@@ -98,6 +98,7 @@ public class CustomerController {
     }
 
 
+    @CrossOrigin
     @PostMapping(path = "/customer/login", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<LoginResponse> customerLogin(@RequestHeader(name = "authorization") final String authorization)
             throws AuthenticationFailedException {
@@ -148,6 +149,7 @@ public class CustomerController {
     }
 
     // logout customer and update log out time in DB
+    @CrossOrigin
     @PostMapping(path = "/customer/logout", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<LogoutResponse> customerLogout(@RequestHeader(name = "authorization") final String authToken)
             throws AuthorizationFailedException {
@@ -158,6 +160,7 @@ public class CustomerController {
     }
 
     // to update customer details
+    @CrossOrigin
     @PutMapping(path = "/customer", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<UpdateCustomerResponse> updateCustomerDetails(@RequestHeader(name = "authorization") final String authToken, final UpdateCustomerRequest updateCustomerRequest)
             throws UpdateCustomerException, AuthorizationFailedException {
@@ -180,6 +183,7 @@ public class CustomerController {
 
     }
 
+    @CrossOrigin
     @PutMapping(path = "/customer/password", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<UpdatePasswordResponse> updateCustomerPassword(@RequestHeader(name = "authorization") final String authToken, final UpdatePasswordRequest updatePasswordRequest ) throws AuthorizationFailedException, UpdateCustomerException {
 

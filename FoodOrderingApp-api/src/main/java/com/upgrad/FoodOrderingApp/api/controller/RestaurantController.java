@@ -30,6 +30,7 @@ public class RestaurantController {
     @Autowired
     private RestaurantService restaurantService;
 
+    @CrossOrigin
     @GetMapping(path = "/restaurant", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<RestaurantListResponse> getAllRestaurants() {
         RestaurantListResponse response;    /* Response entity created by Swagger plugin */
@@ -39,6 +40,7 @@ public class RestaurantController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @CrossOrigin
     @GetMapping(path = "/restaurant/name/{restaurant_name}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<RestaurantListResponse> getRestaurantsByName(@PathVariable(name = "restaurant_name") final String restaurantName) throws RestaurantNotFoundException {
         if(restaurantName.isEmpty()) throw new RestaurantNotFoundException("RNF-003","Restaurant name field should not be empty");
@@ -51,6 +53,7 @@ public class RestaurantController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @CrossOrigin
     @GetMapping(path = "/restaurant/category/{category_id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<RestaurantListResponse> getRestaurantsByCategoryUuid(@PathVariable(name = "category_id") final String categoryUuid) throws CategoryNotFoundException {
         if(categoryUuid.isEmpty()) throw new CategoryNotFoundException("CNF-001","Category id field should not be empty");
@@ -67,6 +70,7 @@ public class RestaurantController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @CrossOrigin
     @GetMapping(path = "/restaurant/{restaurant_id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<RestaurantDetailsResponse> getRestaurantByUuid(@PathVariable(name = "restaurant_id") final String restaurantUuid) throws RestaurantNotFoundException {
         if (restaurantUuid.isEmpty()) throw new RestaurantNotFoundException("RNF-002","Restaurant id field should not be empty");
@@ -120,6 +124,7 @@ public class RestaurantController {
     }
 
     // endpoint for adding rating
+    @CrossOrigin
     @PutMapping(path = "/restaurant/edit/{restaurant_id}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<RestaurantUpdatedResponse> updateRatingByRestaurantId(@RequestHeader(name = "authorization") final String authToken, @RequestHeader(name = "customer_rating") final Integer givenCustomerRating, @PathVariable(name = "restaurant_id") final String restaurantUuid) throws AuthorizationFailedException, RestaurantNotFoundException, InvalidRatingException {
         String token = getToken(authToken);
