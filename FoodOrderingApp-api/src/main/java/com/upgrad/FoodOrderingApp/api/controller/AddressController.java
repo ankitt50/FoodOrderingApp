@@ -16,9 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @RequestMapping(path = "/api")
@@ -96,8 +94,20 @@ public class AddressController {
 
         String token = getToken(authToken);
         CustomerEntity customerEntity = customerBusinessService.checkAuthToken(token, "/address/customer");
-        List<AddressEntity> savedAddressesList = addressBusinessService.getAllSavedAddresses();
+        List<AddressEntity> savedAddressesList = customerEntity.getAddresses();
+
         AddressListResponse addressListResponse = new AddressListResponse();
+
+        if (savedAddressesList == null || savedAddressesList.isEmpty()) {
+            return new ResponseEntity<>(addressListResponse.addresses(Collections.emptyList()), HttpStatus.OK);
+        }
+
+        Collections.sort(savedAddressesList, new Comparator<AddressEntity>() {
+            @Override
+            public int compare(AddressEntity o1, AddressEntity o2) {
+                return o2.getId() - o1.getId();
+            }
+        });
 
         List<AddressList> addressList = new ArrayList<AddressList>();
 
@@ -114,7 +124,7 @@ public class AddressController {
         }
         addressListResponse.addresses(addressList);
 
-        return new ResponseEntity<AddressListResponse>(addressListResponse,HttpStatus.OK);
+        return new ResponseEntity<AddressListResponse>(addressListResponse, HttpStatus.OK);
     }
 
 
