@@ -30,10 +30,28 @@ public class AddressBusinessService {
     public AddressEntity saveAddress(AddressEntity addressEntity, CustomerEntity customerEntity){
         addressEntity.setUuid(UUID.randomUUID().toString());
         addressEntity.setActive(1);
-        List<CustomerEntity> customerWithAddressList = new ArrayList<CustomerEntity>();
-        customerWithAddressList.add(customerEntity);
-        addressEntity.setCustomers(customerWithAddressList);
-        return addressDao.saveAddress(addressEntity);
+        List<AddressEntity> customersAddressesList = customerEntity.getAddresses();
+        customersAddressesList.add(addressEntity);
+//        List<CustomerEntity> customerWithAddressList = new ArrayList<CustomerEntity>();
+//        customerWithAddressList.add(customerEntity);
+
+        CustomerEntity updatedCustomer = addressDao.saveAddress(customerEntity);
+        boolean isAddressSaved = false;
+        for (AddressEntity e:
+                updatedCustomer.getAddresses()) {
+            if(e.getUuid() == addressEntity.getUuid()) {
+                isAddressSaved = true;
+            }
+        }
+
+        if (isAddressSaved) {
+            return addressEntity;
+        }
+        else {
+            return null;
+        }
+
+
     }
 
     @Transactional
@@ -53,8 +71,33 @@ public class AddressBusinessService {
     }
 
     @Transactional
-    public AddressEntity deleteAddress(AddressEntity addressEntity) {
-        return  addressDao.deleteAddress(addressEntity);
+    public AddressEntity deleteAddress(AddressEntity addressEntity, CustomerEntity customerEntity) {
+        int index = -1;
+        int currentIndex = 0;
+        List<AddressEntity> customersAddressesList = customerEntity.getAddresses();
+        for (AddressEntity e:
+                customersAddressesList) {
+            if(e.getUuid() == addressEntity.getUuid()) {
+                index = currentIndex;
+            }
+            currentIndex++;
+        }
+        customersAddressesList.remove(index);
+        CustomerEntity savedCustomer = addressDao.deleteAddress(customerEntity, addressEntity);
+        boolean isAddressDeleted = true;
+        for (AddressEntity e:
+                savedCustomer.getAddresses()) {
+            if(e.getUuid() == addressEntity.getUuid()) {
+                isAddressDeleted = false;
+            }
+        }
+
+        if (isAddressDeleted) {
+            return addressEntity;
+        }
+        else {
+            return null;
+        }
     }
 
     public boolean isPincodeValid(String pincode) {

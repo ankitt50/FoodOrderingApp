@@ -112,7 +112,7 @@ public class AddressController {
         List<AddressList> addressList = new ArrayList<AddressList>();
 
         for (AddressEntity e:
-             savedAddressesList) {
+                savedAddressesList) {
             AddressList address = new AddressList();
             AddressListState state = new AddressListState();
             state.id(UUID.fromString(e.getState().getUuid())).stateName(e.getState().getStateName());
@@ -164,25 +164,24 @@ public class AddressController {
         }
 
         boolean anyUserMatched = false;
+        AddressEntity deletedAddress = new AddressEntity();
         if(addressEntity.getCustomers().isEmpty()) {
             throw new AuthorizationFailedException("ATHR-004","You are not authorized to view/update/delete any one else's address");
         }
         else {
             for (CustomerEntity e:
-                 addressEntity.getCustomers()) {
+                    addressEntity.getCustomers()) {
                 if(customerEntity.getContactNumber().equals(e.getContactNumber())) {
                     anyUserMatched = true;
                 }
             }
             if (anyUserMatched) {
-
+                deletedAddress = addressBusinessService.deleteAddress(addressEntity, customerEntity);
             }
             else {
                 throw new AuthorizationFailedException("ATHR-004","You are not authorized to view/update/delete any one else's address");
             }
         }
-
-        AddressEntity deletedAddress = addressBusinessService.deleteAddress(addressEntity);
 
         return new ResponseEntity<DeleteAddressResponse>(new DeleteAddressResponse().id(UUID.fromString(deletedAddress.getUuid())).status("ADDRESS DELETED SUCCESSFULLY"),HttpStatus.OK);
     }

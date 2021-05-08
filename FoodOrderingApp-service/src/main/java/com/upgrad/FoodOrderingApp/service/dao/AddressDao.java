@@ -2,6 +2,7 @@ package com.upgrad.FoodOrderingApp.service.dao;
 
 
 import com.upgrad.FoodOrderingApp.service.entity.AddressEntity;
+import com.upgrad.FoodOrderingApp.service.entity.CustomerEntity;
 import com.upgrad.FoodOrderingApp.service.entity.StateEntity;
 import org.springframework.stereotype.Repository;
 
@@ -37,9 +38,9 @@ public class AddressDao {
         }
     }
 
-    public AddressEntity saveAddress(AddressEntity addressEntity){
-        entityManager.persist(addressEntity);
-        return addressEntity;
+    public CustomerEntity saveAddress(CustomerEntity customerEntity){
+        entityManager.persist(customerEntity);
+        return customerEntity;
     }
 
     public AddressEntity getAddressByUuid(String uuid) {
@@ -52,9 +53,14 @@ public class AddressDao {
         }
     }
 
-    public AddressEntity deleteAddress(AddressEntity addressEntity) {
+    public CustomerEntity deleteAddress(CustomerEntity customerEntity, AddressEntity addressEntity) {
+        entityManager.persist(customerEntity);
+        deleteAddressWIthUuid(addressEntity);
+        return customerEntity;
+    }
+
+    public void deleteAddressWIthUuid(AddressEntity addressEntity) {
         entityManager.remove(addressEntity);
-        return addressEntity;
     }
 
     public List<AddressEntity> getAllSavedAddresses() {

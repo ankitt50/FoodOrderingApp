@@ -56,7 +56,13 @@ public class CustomerEntity {
     private List<CustomerAuthEntity> authTokens;
 
 //    @ManyToMany(fetch = FetchType.EAGER)
-    @ManyToMany(mappedBy = "customer", fetch = FetchType.EAGER)
+//    @ManyToMany(mappedBy = "customer", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "customer_address",
+            joinColumns = { @JoinColumn(name = "customer_id") },
+            inverseJoinColumns = { @JoinColumn(name = "address_id") }
+    )
     private List<AddressEntity> address;
 
     public CustomerEntity() {

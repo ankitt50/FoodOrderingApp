@@ -1,5 +1,8 @@
 package com.upgrad.FoodOrderingApp.service.entity;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,12 +42,13 @@ public class AddressEntity {
     private int active;
 
 //    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "address")
-    @ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "customer_address",
-            joinColumns = { @JoinColumn(name = "address_id") },
-            inverseJoinColumns = { @JoinColumn(name = "customer_id") }
-    )
+//    @ManyToMany(fetch = FetchType.LAZY, cascade = {})
+//    @JoinTable(
+//            name = "customer_address",
+//            joinColumns = { @JoinColumn(name = "address_id") },
+//            inverseJoinColumns = { @JoinColumn(name = "customer_id") }
+//    )
+    @ManyToMany(mappedBy = "address", fetch = FetchType.LAZY)
     private List<CustomerEntity> customer;
 
 
@@ -137,4 +141,5 @@ public class AddressEntity {
                 ", customers=" + customer +
                 '}';
     }
+
 }
