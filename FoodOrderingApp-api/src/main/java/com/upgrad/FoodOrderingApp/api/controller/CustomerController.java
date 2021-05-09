@@ -19,16 +19,15 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Base64;
 
 @RestController
-@RequestMapping(path = "/api")
 public class CustomerController {
 
 
     @Autowired
     private CustomerBusinessService customerBusinessService;
 
-
+    @CrossOrigin
     @RequestMapping(method = RequestMethod.POST, path = "/customer/signup", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<SignupCustomerResponse> customerSignup(final SignupCustomerRequest signupCustomerRequest) throws SignUpRestrictedException {
+    public ResponseEntity<SignupCustomerResponse> customerSignup(@RequestBody final SignupCustomerRequest signupCustomerRequest) throws SignUpRestrictedException {
 
         final CustomerEntity newCustomer = new CustomerEntity();
 
@@ -41,7 +40,7 @@ public class CustomerController {
 
         boolean emptyFieldFound = false;
 
-        if (signupCustomerRequest.getFirstName() != null) {
+        if (signupCustomerRequest.getFirstName() != null && !signupCustomerRequest.getFirstName().equals("")) {
             newCustomer.setFirstName(signupCustomerRequest.getFirstName());
         }
         else {
@@ -55,21 +54,21 @@ public class CustomerController {
             newCustomer.setLastName("");
         }
 
-        if(signupCustomerRequest.getEmailAddress() != null) {
+        if(signupCustomerRequest.getEmailAddress() != null && !signupCustomerRequest.getEmailAddress().equals("")) {
             newCustomer.setEmail(signupCustomerRequest.getEmailAddress());
         }
         else {
             emptyFieldFound = true;
         }
 
-        if(signupCustomerRequest.getPassword() != null) {
+        if(signupCustomerRequest.getPassword() != null && !signupCustomerRequest.getPassword().equals("")) {
             newCustomer.setPassword(signupCustomerRequest.getPassword());
         }
         else {
             emptyFieldFound = true;
         }
 
-        if(signupCustomerRequest.getContactNumber() != null) {
+        if(signupCustomerRequest.getContactNumber() != null && !signupCustomerRequest.getContactNumber().equals("")) {
             newCustomer.setContactNumber(signupCustomerRequest.getContactNumber());
         }
         else {
@@ -90,14 +89,14 @@ public class CustomerController {
             throw new SignUpRestrictedException("SGR-004", "Weak password!");
         }
 
-            CustomerEntity savedCustomer = customerBusinessService.customerSignup(newCustomer);
+        CustomerEntity savedCustomer = customerBusinessService.customerSignup(newCustomer);
 
         SignupCustomerResponse signupCustomerResponse = new SignupCustomerResponse().id(savedCustomer.getUuid()).status("CUSTOMER SUCCESSFULLY REGISTERED");
         return new ResponseEntity<SignupCustomerResponse>(signupCustomerResponse, HttpStatus.CREATED);
 
     }
 
-
+    @CrossOrigin
     @PostMapping(path = "/customer/login", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<LoginResponse> customerLogin(@RequestHeader(name = "authorization") final String authorization)
             throws AuthenticationFailedException {
@@ -107,9 +106,9 @@ public class CustomerController {
         String contactNumber = "", password = "";
 
         try {
-        byte[] array = Base64.getDecoder().decode(encodedString); // decode username and password
-        String usrPsw = new String(array);
-        String[] usrPswArray = usrPsw.split(":"); // split username and password
+            byte[] array = Base64.getDecoder().decode(encodedString); // decode username and password
+            String usrPsw = new String(array);
+            String[] usrPswArray = usrPsw.split(":"); // split username and password
             contactNumber = usrPswArray[0];
             password = usrPswArray[1];
         } catch (Exception ex) {
@@ -148,6 +147,7 @@ public class CustomerController {
     }
 
     // logout customer and update log out time in DB
+    @CrossOrigin
     @PostMapping(path = "/customer/logout", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<LogoutResponse> customerLogout(@RequestHeader(name = "authorization") final String authToken)
             throws AuthorizationFailedException {
@@ -158,11 +158,12 @@ public class CustomerController {
     }
 
     // to update customer details
+    @CrossOrigin
     @PutMapping(path = "/customer", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<UpdateCustomerResponse> updateCustomerDetails(@RequestHeader(name = "authorization") final String authToken, final UpdateCustomerRequest updateCustomerRequest)
+    public ResponseEntity<UpdateCustomerResponse> updateCustomerDetails(@RequestHeader(name = "authorization") final String authToken, @RequestBody final UpdateCustomerRequest updateCustomerRequest)
             throws UpdateCustomerException, AuthorizationFailedException {
 
-        if(updateCustomerRequest.getFirstName() != null) {
+        if(updateCustomerRequest.getFirstName() != null && !updateCustomerRequest.getFirstName().equals("")) {
             String token = getToken(authToken);
             CustomerEntity customerEntity = customerBusinessService.checkAuthToken(token, "/customer");
             CustomerEntity updatedCustomerEntity = customerBusinessService.updateCustomerDetails(customerEntity, updateCustomerRequest.getFirstName(), updateCustomerRequest.getLastName());
@@ -180,10 +181,11 @@ public class CustomerController {
 
     }
 
+    @CrossOrigin
     @PutMapping(path = "/customer/password", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<UpdatePasswordResponse> updateCustomerPassword(@RequestHeader(name = "authorization") final String authToken, final UpdatePasswordRequest updatePasswordRequest ) throws AuthorizationFailedException, UpdateCustomerException {
+    public ResponseEntity<UpdatePasswordResponse> updateCustomerPassword(@RequestHeader(name = "authorization") final String authToken,@RequestBody final UpdatePasswordRequest updatePasswordRequest ) throws AuthorizationFailedException, UpdateCustomerException {
 
-        if(updatePasswordRequest.getNewPassword() == null || updatePasswordRequest.getOldPassword() == null) {
+        if((updatePasswordRequest.getNewPassword() == null || updatePasswordRequest.getNewPassword().equals("")) || (updatePasswordRequest.getOldPassword() == null || updatePasswordRequest.getOldPassword().equals(""))) {
             throw new UpdateCustomerException("UCR-003","No field should be empty");
         }
 

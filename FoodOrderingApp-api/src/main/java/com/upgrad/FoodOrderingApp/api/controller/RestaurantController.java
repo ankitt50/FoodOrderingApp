@@ -20,8 +20,8 @@ import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
+// Rest controller for handling Restaurant related endpoint requests
 @RestController
-@RequestMapping(path = "/api")      /* Setting base path to "/api" */
 public class RestaurantController {
 
     @Autowired
@@ -30,6 +30,8 @@ public class RestaurantController {
     @Autowired
     private RestaurantService restaurantService;
 
+    // Get all restaurants
+    @CrossOrigin
     @GetMapping(path = "/restaurant", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<RestaurantListResponse> getAllRestaurants() {
         RestaurantListResponse response;    /* Response entity created by Swagger plugin */
@@ -39,18 +41,22 @@ public class RestaurantController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    // Search restaurant based on given search string
+    @CrossOrigin
     @GetMapping(path = "/restaurant/name/{restaurant_name}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<RestaurantListResponse> getRestaurantsByName(@PathVariable(name = "restaurant_name") final String restaurantName) throws RestaurantNotFoundException {
         if(restaurantName.isEmpty()) throw new RestaurantNotFoundException("RNF-003","Restaurant name field should not be empty");
 
         RestaurantListResponse response;    /* Response entity created by Swagger plugin */
         List<RestaurantEntity> allRestaurants = restaurantService.getAllRestaurants();
-        List<RestaurantEntity> restaurants = allRestaurants.stream().filter(r -> r.getRestaurantName().toLowerCase().contains(restaurantName)).collect(Collectors.toList());
+        List<RestaurantEntity> restaurants = allRestaurants.stream().filter(r -> r.getRestaurantName().toLowerCase().contains(restaurantName.toLowerCase())).collect(Collectors.toList());
 
         response = getRestaurantListResponseFromRestaurantEntity(restaurants);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    // Get all restaurants based on the given food category
+    @CrossOrigin
     @GetMapping(path = "/restaurant/category/{category_id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<RestaurantListResponse> getRestaurantsByCategoryUuid(@PathVariable(name = "category_id") final String categoryUuid) throws CategoryNotFoundException {
         if(categoryUuid.isEmpty()) throw new CategoryNotFoundException("CNF-001","Category id field should not be empty");
@@ -67,6 +73,8 @@ public class RestaurantController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    // Get restaurant by UUID
+    @CrossOrigin
     @GetMapping(path = "/restaurant/{restaurant_id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<RestaurantDetailsResponse> getRestaurantByUuid(@PathVariable(name = "restaurant_id") final String restaurantUuid) throws RestaurantNotFoundException {
         if (restaurantUuid.isEmpty()) throw new RestaurantNotFoundException("RNF-002","Restaurant id field should not be empty");
@@ -119,9 +127,10 @@ public class RestaurantController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    // endpoint for adding rating
-    @PutMapping(path = "/restaurant/edit/{restaurant_id}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<RestaurantUpdatedResponse> updateRatingByRestaurantId(@RequestHeader(name = "authorization") final String authToken, @RequestHeader(name = "customer_rating") final Integer givenCustomerRating, @PathVariable(name = "restaurant_id") final String restaurantUuid) throws AuthorizationFailedException, RestaurantNotFoundException, InvalidRatingException {
+    // Add rating to a restaurant
+    @CrossOrigin
+    @PutMapping(path = "/restaurant/{restaurant_id}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<RestaurantUpdatedResponse> updateRatingByRestaurantId(@RequestHeader(name = "authorization") final String authToken, @RequestParam(name = "customer_rating") final Double givenCustomerRating, @PathVariable(name = "restaurant_id") final String restaurantUuid) throws AuthorizationFailedException, RestaurantNotFoundException, InvalidRatingException {
         String token = getToken(authToken);
         customerBusinessService.checkAuthToken(token, "/restaurant/edit/{restaurant_id}");
 

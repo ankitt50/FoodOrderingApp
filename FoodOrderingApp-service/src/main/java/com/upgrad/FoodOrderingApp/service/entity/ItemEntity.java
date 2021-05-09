@@ -6,6 +6,9 @@ import java.util.List;
 
 @Entity
 @Table(name = "item")
+@NamedQueries({
+        @NamedQuery(name = "getItemByUuid", query = "select i from ItemEntity i where i.uuid =:uuid ")
+})
 public class ItemEntity implements Comparable<ItemEntity> {
 
     @Id
@@ -33,6 +36,9 @@ public class ItemEntity implements Comparable<ItemEntity> {
 
     @OneToMany(mappedBy = "item", cascade = CascadeType.ALL)
     private List<OrderItemEntity> orderItemEntity = new ArrayList<>();
+
+    public ItemEntity() {
+    }
 
     public int getId() {
         return id;

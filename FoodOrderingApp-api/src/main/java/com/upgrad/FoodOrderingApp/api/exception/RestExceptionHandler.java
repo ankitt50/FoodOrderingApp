@@ -34,42 +34,65 @@ public class RestExceptionHandler {
 
     @ExceptionHandler(UpdateCustomerException.class)
     public ResponseEntity<ErrorResponse> handleUpdateCustomerException(UpdateCustomerException exc,
-                                                                            WebRequest request) {
+                                                                       WebRequest request) {
         return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(exc.getCode()).
                 message(exc.getErrorMessage()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(SaveAddressException.class)
     public ResponseEntity<ErrorResponse> handleSaveAddressException(SaveAddressException exc,
-                                                                       WebRequest request) {
+                                                                    WebRequest request) {
         return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(exc.getCode()).
                 message(exc.getErrorMessage()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(AddressNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleAddressNotFoundException(AddressNotFoundException exc,
-                                                                       WebRequest request) {
+                                                                        WebRequest request) {
         return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(exc.getCode()).
-                message(exc.getErrorMessage()), HttpStatus.BAD_REQUEST);
+                message(exc.getErrorMessage()), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(CategoryNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleCategoryNotFoundException(CategoryNotFoundException exc,
-                                                                        WebRequest request) {
+                                                                         WebRequest request) {
         return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(exc.getCode()).
-                message(exc.getErrorMessage()), HttpStatus.BAD_REQUEST);
+                message(exc.getErrorMessage()), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(RestaurantNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleRestaurantNotFoundException(RestaurantNotFoundException exc,
-                                                                         WebRequest request) {
+                                                                           WebRequest request) {
         return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(exc.getCode()).
-                message(exc.getErrorMessage()), HttpStatus.BAD_REQUEST);
+                message(exc.getErrorMessage()), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(InvalidRatingException.class)
     public ResponseEntity<ErrorResponse> handleInvalidRatingException(InvalidRatingException exc,
-                                                                           WebRequest request) {
+                                                                      WebRequest request) {
+        return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(exc.getCode()).
+                message(exc.getErrorMessage()), HttpStatus.BAD_REQUEST);
+    }
+
+    //CouponNotFoundException
+    @ExceptionHandler(CouponNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleCouponNotFoundException(CouponNotFoundException exc,
+                                                                       WebRequest request) {
+        return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(exc.getCode()).
+                message(exc.getErrorMessage()), HttpStatus.NOT_FOUND);
+    }
+    //PaymentMethodNotFoundException
+    @ExceptionHandler(PaymentMethodNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handlePaymentMethodNotFoundException(PaymentMethodNotFoundException exc,
+                                                                              WebRequest request) {
+        return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(exc.getCode()).
+                message(exc.getErrorMessage()), HttpStatus.NOT_FOUND);
+    }
+
+    //ItemNotFoundException
+    @ExceptionHandler(ItemNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleItemNotFoundException(ItemNotFoundException exc,
+                                                                     WebRequest request) {
         return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(exc.getCode()).
                 message(exc.getErrorMessage()), HttpStatus.BAD_REQUEST);
     }

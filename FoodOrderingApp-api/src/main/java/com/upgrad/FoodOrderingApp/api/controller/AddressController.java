@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
+// Rest controller for handling Address related endpoint requests
 @RestController
-@RequestMapping(path = "/api")
 public class AddressController {
 
     @Autowired
@@ -28,44 +28,48 @@ public class AddressController {
     @Autowired
     private CustomerBusinessService customerBusinessService;
 
+    // Save an address
+    @CrossOrigin
     @RequestMapping(method = RequestMethod.POST, path = "/address",
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<SaveAddressResponse> saveAddress(@RequestHeader(name = "authorization") final String authToken, final SaveAddressRequest saveAddressRequest)
+    public ResponseEntity<SaveAddressResponse> saveAddress(@RequestHeader(name = "authorization") final String authToken,@RequestBody final SaveAddressRequest saveAddressRequest)
             throws AuthorizationFailedException, SaveAddressException, AddressNotFoundException {
 
+        String token = getToken(authToken); /* getting the JWT token from the request header*/
 
-        String token = getToken(authToken);
+        // Check if the provided auth-token is valid and fetch the corresponding customer:
         CustomerEntity customerEntity = customerBusinessService.checkAuthToken(token, "/address");
+
         AddressEntity addressEntity = new AddressEntity();
 
         boolean isAnyFieldEmpty = false;
 
-        if(saveAddressRequest.getFlatBuildingName()==null){
+        if(saveAddressRequest.getFlatBuildingName()==null || saveAddressRequest.getFlatBuildingName().equals("")){
             isAnyFieldEmpty = true;
         }else{
             addressEntity.setFlatBuildNumber(saveAddressRequest.getFlatBuildingName());
         }
 
-        if(saveAddressRequest.getLocality()==null){
+        if(saveAddressRequest.getLocality()==null || saveAddressRequest.getLocality().equals("")){
             isAnyFieldEmpty = true;
         }else{
             addressEntity.setLocality(saveAddressRequest.getLocality());
         }
 
-        if(saveAddressRequest.getCity()==null){
+        if(saveAddressRequest.getCity()==null || saveAddressRequest.getCity().equals("")){
             isAnyFieldEmpty = true;
         }else{
             addressEntity.setCity(saveAddressRequest.getCity());
         }
 
-        if(saveAddressRequest.getPincode()==null){
+        if(saveAddressRequest.getPincode()==null || saveAddressRequest.getPincode().equals("")){
             isAnyFieldEmpty = true;
         }else{
             addressEntity.setPincode(saveAddressRequest.getPincode());
         }
 
-        if(saveAddressRequest.getStateUuid()==null){
+        if(saveAddressRequest.getStateUuid()==null || saveAddressRequest.getStateUuid().equals("")){
             isAnyFieldEmpty = true;
         }else{
             StateEntity state = addressBusinessService.getStateByUuid(saveAddressRequest.getStateUuid());
@@ -89,6 +93,8 @@ public class AddressController {
 
     }
 
+    // Get all addresses of a customer
+    @CrossOrigin
     @GetMapping(path = "/address/customer", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<AddressListResponse> getAllSavedAddresses(@RequestHeader(name = "authorization") final String authToken) throws AuthorizationFailedException {
 
@@ -127,8 +133,8 @@ public class AddressController {
         return new ResponseEntity<AddressListResponse>(addressListResponse, HttpStatus.OK);
     }
 
-
-
+    // Get all states
+    @CrossOrigin
     @GetMapping(path = "/states", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<StatesListResponse> getAllStates(){
 
@@ -148,6 +154,8 @@ public class AddressController {
         return new ResponseEntity<StatesListResponse>(statesListResponse,HttpStatus.OK);
     }
 
+    // Delete an address
+    @CrossOrigin
     @DeleteMapping(path = "/address/{address_id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<DeleteAddressResponse> deleteAddress(@PathVariable(name = "address_id") final String addressID, @RequestHeader(name = "authorization") final String authToken) throws AuthorizationFailedException, AddressNotFoundException {
         String token = getToken(authToken);
@@ -160,12 +168,12 @@ public class AddressController {
         AddressEntity addressEntity = addressBusinessService.getAddressByUuid(addressID);
 
         if(addressEntity==null) {
-            throw new AddressNotFoundException("ANF-003)","No address by this id");
+            throw new AddressNotFoundException("ANF-003","No address by this id");
         }
 
         boolean anyUserMatched = false;
         AddressEntity deletedAddress = new AddressEntity();
-        if(addressEntity.getCustomers().isEmpty()) {
+        if(addressEntity.getCustomers()==null || addressEntity.getCustomers().isEmpty()) {
             throw new AuthorizationFailedException("ATHR-004","You are not authorized to view/update/delete any one else's address");
         }
         else {
