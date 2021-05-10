@@ -6,18 +6,19 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.*;
 
+// DAO layer for the Payment controller
 @Repository
 public class PaymentDao {
 
-    @PersistenceContext
-    private EntityManager entityManager;
+  @PersistenceContext private EntityManager entityManager;
 
-     public List<PaymentEntity> getAllPaymentMethods() {
-        List<PaymentEntity> paymentMethods =
-                entityManager.createNamedQuery("getAllPaymentMethods", PaymentEntity.class).getResultList();
-        if (paymentMethods != null) {
-            return paymentMethods;
-        }
-        return Collections.emptyList();
+  // get All Payment Methods
+  public List<PaymentEntity> getAllPaymentMethods() {
+    List<PaymentEntity> paymentMethods =
+        entityManager.createNamedQuery("getAllPaymentMethods", PaymentEntity.class).getResultList();
+    if (paymentMethods != null) {
+      return paymentMethods;
     }
+    return Collections.emptyList();
+  }
 }

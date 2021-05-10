@@ -16,48 +16,58 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
+// Rest controller for handling Category related endpoint requests
 @RestController
 public class CategoryController {
 
-    @Autowired
-    CategoryService categoryService;
+  @Autowired CategoryService categoryService;
 
-    @CrossOrigin
-    @GetMapping(path = "/category", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<CategoriesListResponse> getAll() {
-        List<CategoryEntity> categories = categoryService.getAll();
-        CategoriesListResponse categoryList = new CategoriesListResponse();     /* Response entity created by Swagger plugin */
+  // get all categories
+  @CrossOrigin
+  @GetMapping(path = "/category", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+  public ResponseEntity<CategoriesListResponse> getAll() {
+    List<CategoryEntity> categories = categoryService.getAll();
+    CategoriesListResponse categoryList =
+        new CategoriesListResponse(); /* Response entity created by Swagger plugin */
 
-        for(CategoryEntity categoryEntity: categories) {
-            CategoryListResponse category = new CategoryListResponse();
-            category.setId(UUID.fromString(categoryEntity.getUuid()));
-            category.setCategoryName(categoryEntity.getCategoryName());
-            categoryList.addCategoriesItem(category);
-        }
-
-        return new ResponseEntity<>(categoryList, HttpStatus.OK);
+    for (CategoryEntity categoryEntity : categories) {
+      CategoryListResponse category = new CategoryListResponse();
+      category.setId(UUID.fromString(categoryEntity.getUuid()));
+      category.setCategoryName(categoryEntity.getCategoryName());
+      categoryList.addCategoriesItem(category);
     }
 
-    @CrossOrigin
-    @GetMapping(path="/category/{category_id}", produces=MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<CategoryDetailsResponse> getCategoryById(@PathVariable(name="category_id") final String categoryId) throws CategoryNotFoundException {
-        if (categoryId.isEmpty()) throw new CategoryNotFoundException("CNF-001", "Category id field should not be empty");
+    return new ResponseEntity<>(categoryList, HttpStatus.OK);
+  }
 
-        CategoryEntity category = categoryService.getCategoryById(categoryId);
-        if (category == null) throw new CategoryNotFoundException("CNF-002", "No category by this id");
+  // get category by category ID
+  @CrossOrigin
+  @GetMapping(path = "/category/{category_id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+  public ResponseEntity<CategoryDetailsResponse> getCategoryById(
+      @PathVariable(name = "category_id") final String categoryId)
+      throws CategoryNotFoundException {
+    if (categoryId.isEmpty())
+      throw new CategoryNotFoundException("CNF-001", "Category id field should not be empty");
 
-        CategoryDetailsResponse response = new CategoryDetailsResponse();   /* Response entity created by Swagger plugin */
-        response.setId(UUID.fromString(category.getUuid()));
-        response.setCategoryName(category.getCategoryName());
-        category.getItems().forEach(item -> {
-            ItemList itemList = new ItemList();
-            itemList.setId(UUID.fromString(item.getUuid()));
-            itemList.setItemName(item.getItemName());
-            itemList.setPrice(item.getPrice());
-            itemList.setItemType(ItemList.ItemTypeEnum.fromValue(item.getType()));
-            response.addItemListItem(itemList);
-        });
+    CategoryEntity category = categoryService.getCategoryById(categoryId);
+    if (category == null) throw new CategoryNotFoundException("CNF-002", "No category by this id");
 
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
+    CategoryDetailsResponse response =
+        new CategoryDetailsResponse(); /* Response entity created by Swagger plugin */
+    response.setId(UUID.fromString(category.getUuid()));
+    response.setCategoryName(category.getCategoryName());
+    category
+        .getItems()
+        .forEach(
+            item -> {
+              ItemList itemList = new ItemList();
+              itemList.setId(UUID.fromString(item.getUuid()));
+              itemList.setItemName(item.getItemName());
+              itemList.setPrice(item.getPrice());
+              itemList.setItemType(ItemList.ItemTypeEnum.fromValue(item.getType()));
+              response.addItemListItem(itemList);
+            });
+
+    return new ResponseEntity<>(response, HttpStatus.OK);
+  }
 }

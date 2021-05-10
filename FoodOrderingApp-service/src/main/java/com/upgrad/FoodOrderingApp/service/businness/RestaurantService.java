@@ -10,37 +10,41 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+// Service layer for the Restaurant controller
 @Service
 public class RestaurantService {
 
-    @Autowired
-    private RestaurantDao restaurantDao;
+  @Autowired private RestaurantDao restaurantDao;
 
-    @Autowired
-    private CategoryDao categoryDao;
+  @Autowired private CategoryDao categoryDao;
 
-    @Transactional
-    public List<RestaurantEntity> getAllRestaurants() {
-        return restaurantDao.getAllRestaurants();
-    }
+  // get list of restaurant entities
+  @Transactional
+  public List<RestaurantEntity> getAllRestaurants() {
+    return restaurantDao.getAllRestaurants();
+  }
 
-    @Transactional
-    public List<RestaurantEntity> getRestaurantsByName(String restaurantName) {
-        return restaurantDao.getRestaurantsByName(restaurantName);
-    }
+  // get list of restaurant entities
+  @Transactional
+  public List<RestaurantEntity> getRestaurantsByName(String restaurantName) {
+    return restaurantDao.getRestaurantsByName(restaurantName);
+  }
 
-    @Transactional
-    public CategoryEntity getCategoryByUuid(String uuid) {
-        return categoryDao.getCategoryByUuid(uuid);
-    }
+  // get category by UUID
+  @Transactional
+  public CategoryEntity getCategoryByUuid(String uuid) {
+    return categoryDao.getCategoryByUuid(uuid);
+  }
 
-    @Transactional
-    public RestaurantEntity getRestaurantByUuid(String restaurantUuid) {
-        return restaurantDao.getRestaurantsByUuid(restaurantUuid);
-    }
+  // get Restaurant entity By Uuid
+  @Transactional
+  public RestaurantEntity getRestaurantByUuid(String restaurantUuid) {
+    return restaurantDao.getRestaurantsByUuid(restaurantUuid);
+  }
 
-    @Transactional
-    public RestaurantEntity updateRatingOfRestaurant(RestaurantEntity restaurant) {
-        return restaurantDao.updateRatingOfRestaurant(restaurant);
-    }
+  // update Rating of Restaurant
+  @Transactional
+  public RestaurantEntity updateRatingOfRestaurant(RestaurantEntity restaurant) {
+    return restaurantDao.updateRatingOfRestaurant(restaurant);
+  }
 }

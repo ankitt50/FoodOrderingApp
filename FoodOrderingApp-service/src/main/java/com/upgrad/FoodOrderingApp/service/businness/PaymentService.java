@@ -6,13 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.*;
 
+// Service layer for the Payment controller
 @Service
 public class PaymentService {
 
-    @Autowired
-    private PaymentDao paymentDao;
+  @Autowired private PaymentDao paymentDao;
 
-    public List<PaymentEntity> getAllPaymentMethods() {
-        return paymentDao.getAllPaymentMethods();
-    }
+  // retrieve list of payment entities
+  public List<PaymentEntity> getAllPaymentMethods() {
+    return paymentDao.getAllPaymentMethods();
+  }
 }

@@ -7,138 +7,140 @@ import java.util.List;
 
 @Entity
 @Table(name = "orders")
-@NamedQueries({@NamedQuery(name = "getOrdersByRestaurant", query = "select s from OrderEntity s where s.restaurant =:restaurant "),
-        @NamedQuery(name = "getPastOrdersOfUsers", query = "select s from OrderEntity s where s.customer =:customer ")
+@NamedQueries({
+  @NamedQuery(
+      name = "getOrdersByRestaurant",
+      query = "select s from OrderEntity s where s.restaurant =:restaurant "),
+  @NamedQuery(
+      name = "getPastOrdersOfUsers",
+      query = "select s from OrderEntity s where s.customer =:customer ")
 })
 public class OrderEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private int id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "id")
+  private int id;
 
-    @Column(name = "uuid")
-    private String uuid;
+  @Column(name = "uuid")
+  private String uuid;
 
-    @Column(name = "bill")
-    private int bill;
+  @Column(name = "bill")
+  private int bill;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "coupon_id")
-    private CouponEntity coupon;
+  @ManyToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "coupon_id")
+  private CouponEntity coupon;
 
-    @Column(name = "discount")
-    private int discount;
+  @Column(name = "discount")
+  private int discount;
 
-    @Column(name = "date")
-    private LocalDateTime date;
+  @Column(name = "date")
+  private LocalDateTime date;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "customer_id")
-    private CustomerEntity customer;
+  @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+  @JoinColumn(name = "customer_id")
+  private CustomerEntity customer;
 
+  @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+  @JoinColumn(name = "address_id")
+  private AddressEntity address;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "address_id")
-    private AddressEntity address;
+  @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+  @JoinColumn(name = "restaurant_id")
+  private RestaurantEntity restaurant;
 
+  @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+  @JoinColumn(name = "payment_id")
+  private PaymentEntity payment;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "restaurant_id")
-    private RestaurantEntity restaurant;
+  @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+  private List<OrderItemEntity> orderItemEntity = new ArrayList<>();
 
+  public int getId() {
+    return id;
+  }
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "payment_id")
-    private PaymentEntity payment;
+  public void setId(int id) {
+    this.id = id;
+  }
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
-    private List<OrderItemEntity> orderItemEntity = new ArrayList<>();
+  public String getUuid() {
+    return uuid;
+  }
 
-    public int getId() {
-        return id;
-    }
+  public void setUuid(String uuid) {
+    this.uuid = uuid;
+  }
 
-    public void setId(int id) {
-        this.id = id;
-    }
+  public int getBill() {
+    return bill;
+  }
 
-    public String getUuid() {
-        return uuid;
-    }
+  public void setBill(int bill) {
+    this.bill = bill;
+  }
 
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
-    }
+  public CouponEntity getCoupon() {
+    return coupon;
+  }
 
-    public int getBill() {
-        return bill;
-    }
+  public void setCoupon(CouponEntity coupon) {
+    this.coupon = coupon;
+  }
 
-    public void setBill(int bill) {
-        this.bill = bill;
-    }
+  public int getDiscount() {
+    return discount;
+  }
 
-    public CouponEntity getCoupon() {
-        return coupon;
-    }
+  public void setDiscount(int discount) {
+    this.discount = discount;
+  }
 
-    public void setCoupon(CouponEntity coupon) {
-        this.coupon = coupon;
-    }
+  public CustomerEntity getCustomer() {
+    return customer;
+  }
 
-    public int getDiscount() {
-        return discount;
-    }
+  public void setCustomer(CustomerEntity customer) {
+    this.customer = customer;
+  }
 
-    public void setDiscount(int discount) {
-        this.discount = discount;
-    }
+  public AddressEntity getAddress() {
+    return address;
+  }
 
-    public CustomerEntity getCustomer() {
-        return customer;
-    }
+  public void setAddress(AddressEntity address) {
+    this.address = address;
+  }
 
-    public void setCustomer(CustomerEntity customer) {
-        this.customer = customer;
-    }
+  public RestaurantEntity getRestaurant() {
+    return restaurant;
+  }
 
-    public AddressEntity getAddress() {
-        return address;
-    }
+  public void setRestaurant(RestaurantEntity restaurant) {
+    this.restaurant = restaurant;
+  }
 
-    public void setAddress(AddressEntity address) {
-        this.address = address;
-    }
+  public PaymentEntity getPayment() {
+    return payment;
+  }
 
-    public RestaurantEntity getRestaurant() {
-        return restaurant;
-    }
+  public void setPayment(PaymentEntity payment) {
+    this.payment = payment;
+  }
 
-    public void setRestaurant(RestaurantEntity restaurant) {
-        this.restaurant = restaurant;
-    }
+  public LocalDateTime getDate() {
+    return date;
+  }
 
-    public PaymentEntity getPayment() {
-        return payment;
-    }
+  public void setDate(LocalDateTime date) {
+    this.date = date;
+  }
 
-    public void setPayment(PaymentEntity payment) {
-        this.payment = payment;
-    }
+  public List<OrderItemEntity> getOrderItemEntity() {
+    return orderItemEntity;
+  }
 
-    public LocalDateTime getDate() {
-        return date;
-    }
-
-    public void setDate(LocalDateTime date) {
-        this.date = date;
-    }
-
-    public List<OrderItemEntity> getOrderItemEntity() {
-        return orderItemEntity;
-    }
-
-    public void setOrderItemEntity(List<OrderItemEntity> orderItemEntity) {
-        this.orderItemEntity = orderItemEntity;
-    }
+  public void setOrderItemEntity(List<OrderItemEntity> orderItemEntity) {
+    this.orderItemEntity = orderItemEntity;
+  }
 }

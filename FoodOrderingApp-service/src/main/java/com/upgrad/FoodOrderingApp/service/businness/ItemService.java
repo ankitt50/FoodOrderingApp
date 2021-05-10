@@ -6,16 +6,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+// Service layer for the Item controller
 @Service
 public class ItemService {
 
-    @Autowired
-    private ItemDao itemDao;
+  @Autowired private ItemDao itemDao;
 
-    @Transactional
-    public ItemEntity getItemByUuid(String Uuid) {
-        return itemDao.getItemByUuid(Uuid);
-    }
-
+  // get item entity by UUID
+  @Transactional
+  public ItemEntity getItemByUuid(String Uuid) {
+    return itemDao.getItemByUuid(Uuid);
+  }
 }
-

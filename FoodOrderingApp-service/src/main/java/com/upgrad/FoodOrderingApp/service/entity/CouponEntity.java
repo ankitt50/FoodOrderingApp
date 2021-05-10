@@ -5,62 +5,69 @@ import java.util.List;
 
 @Entity
 @Table(name = "coupon")
-@NamedQueries({@NamedQuery(name = "getCouponByCouponName", query = "select c from CouponEntity c where c.couponName=:couponName")})
+@NamedQueries({
+  @NamedQuery(
+      name = "getCouponByCouponName",
+      query = "select c from CouponEntity c where c.couponName =:couponName "),
+  @NamedQuery(name = "getCouponByUuid", query = "select c from CouponEntity c where c.uuid =:uuid ")
+})
 public class CouponEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private int id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "id")
+  private int id;
 
-    @Column(name = "uuid")
-    private String uuid;
+  @Column(name = "uuid")
+  private String uuid;
 
-    @Column(name = "coupon_name")
-    private String couponName;
+  @Column(name = "coupon_name")
+  private String couponName;
 
-    @Column(name = "percent")
-    private int percent;
+  @Column(name = "percent")
+  private int percent;
 
-    @OneToMany(mappedBy = "coupon", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-    private List<OrderEntity> order;
+  @OneToMany(mappedBy = "coupon", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+  private List<OrderEntity> order;
 
-    public int getId() {
-        return id;
-    }
+  public CouponEntity() {}
 
-    public void setId(int id) {
-        this.id = id;
-    }
+  public int getId() {
+    return id;
+  }
 
-    public String getUuid() {
-        return uuid;
-    }
+  public void setId(int id) {
+    this.id = id;
+  }
 
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
-    }
+  public String getUuid() {
+    return uuid;
+  }
 
-    public String getCouponName() {
-        return couponName;
-    }
+  public void setUuid(String uuid) {
+    this.uuid = uuid;
+  }
 
-    public void setCouponName(String couponName) {
-        this.couponName = couponName;
-    }
+  public String getCouponName() {
+    return couponName;
+  }
 
-    public int getPercent() {
-        return percent;
-    }
+  public void setCouponName(String couponName) {
+    this.couponName = couponName;
+  }
 
-    public void setPercent(int percent) {
-        this.percent = percent;
-    }
+  public int getPercent() {
+    return percent;
+  }
 
-    public List<OrderEntity> getOrder() {
-        return order;
-    }
+  public void setPercent(int percent) {
+    this.percent = percent;
+  }
 
-    public void setOrder(List<OrderEntity> order) {
-        this.order = order;
-    }
+  public List<OrderEntity> getOrder() {
+    return order;
+  }
+
+  public void setOrder(List<OrderEntity> order) {
+    this.order = order;
+  }
 }

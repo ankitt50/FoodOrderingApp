@@ -8,18 +8,20 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+// Service layer for the Category controller
 @Service
 public class CategoryService {
-    @Autowired
-    CategoryDao categoryDao;
+  @Autowired CategoryDao categoryDao;
 
-    @Transactional
-    public List<CategoryEntity> getAll() {
-        return categoryDao.getAll();
-    }
+  // get list of category entities
+  @Transactional
+  public List<CategoryEntity> getAll() {
+    return categoryDao.getAll();
+  }
 
-    @Transactional
-    public CategoryEntity getCategoryById(String uuid) {
-        return categoryDao.getCategoryByUuid(uuid);
-    }
+  // get category entity for the given UUID
+  @Transactional
+  public CategoryEntity getCategoryById(String uuid) {
+    return categoryDao.getCategoryByUuid(uuid);
+  }
 }

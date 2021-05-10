@@ -8,159 +8,167 @@ import java.util.List;
 
 @Entity
 @Table(name = "customer")
-@NamedQueries({@NamedQuery(name = "ContactNumber",query = "SELECT c FROM CustomerEntity c WHERE c.contactNumber = :contactNumber")
+@NamedQueries({
+  @NamedQuery(
+      name = "ContactNumber",
+      query = "SELECT c FROM CustomerEntity c WHERE c.contactNumber = :contactNumber")
 })
 public class CustomerEntity {
 
-    @Id
-    @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+  @Id
+  @Column(name = "id")
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private int id;
 
+  @Column(name = "uuid")
+  @Size(max = 200)
+  private String uuid;
 
-    @Column(name = "uuid")
-    @Size(max = 200)
-    private String uuid;
+  @Column(name = "email")
+  @Size(max = 50)
+  private String email;
 
+  @Column(name = "password")
+  @Size(max = 255)
+  @NotNull
+  private String password;
 
-    @Column(name = "email")
-    @Size(max = 50)
-    private String email;
+  @Column(name = "firstname")
+  @NotNull
+  @Size(max = 30)
+  private String firstName;
 
-    @Column(name = "password")
-    @Size(max = 255)
-    @NotNull
-    private String password;
+  @Column(name = "lastname")
+  @Size(max = 30)
+  private String lastName;
 
-    @Column(name = "firstname")
-    @NotNull
-    @Size(max = 30)
-    private String firstName;
+  @Column(name = "contact_number")
+  @NotNull
+  @Size(max = 30)
+  private String contactNumber;
 
-    @Column(name = "lastname")
-    @Size(max = 30)
-    private String lastName;
+  @Column(name = "salt")
+  @NotNull
+  @Size(max = 255)
+  private String salt;
 
-    @Column(name = "contact_number")
-    @NotNull
-    @Size(max = 30)
-    private String contactNumber;
+  @OneToMany(mappedBy = "customer", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+  private List<CustomerAuthEntity> authTokens;
 
-    @Column(name = "salt")
-    @NotNull
-    @Size(max = 255)
-    private String salt;
+  @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+  @JoinTable(
+      name = "customer_address",
+      joinColumns = {@JoinColumn(name = "customer_id")},
+      inverseJoinColumns = {@JoinColumn(name = "address_id")})
+  private List<AddressEntity> address;
 
+  public CustomerEntity() {}
 
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-    private List<CustomerAuthEntity> authTokens;
+  public Integer getId() {
+    return id;
+  }
 
-//    @ManyToMany(fetch = FetchType.EAGER)
-//    @ManyToMany(mappedBy = "customer", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(
-            name = "customer_address",
-            joinColumns = { @JoinColumn(name = "customer_id") },
-            inverseJoinColumns = { @JoinColumn(name = "address_id") }
-    )
-    private List<AddressEntity> address;
+  public void setId(Integer id) {
+    this.id = id;
+  }
 
-    public CustomerEntity() {
-    }
+  public String getUuid() {
+    return uuid;
+  }
 
-    public Integer getId() {
-        return id;
-    }
+  public void setUuid(String uuid) {
+    this.uuid = uuid;
+  }
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
+  public String getEmail() {
+    return email;
+  }
 
-    public String getUuid() {
-        return uuid;
-    }
+  public void setEmail(String email) {
+    this.email = email;
+  }
 
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
-    }
+  public String getPassword() {
+    return password;
+  }
 
-    public String getEmail() {
-        return email;
-    }
+  public void setPassword(String password) {
+    this.password = password;
+  }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+  public String getFirstName() {
+    return firstName;
+  }
 
-    public String getPassword() {
-        return password;
-    }
+  public void setFirstName(String firstName) {
+    this.firstName = firstName;
+  }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+  public String getLastName() {
+    return lastName;
+  }
 
-    public String getFirstName() {
-        return firstName;
-    }
+  public void setLastName(String lastName) {
+    this.lastName = lastName;
+  }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
+  public String getContactNumber() {
+    return contactNumber;
+  }
 
-    public String getLastName() {
-        return lastName;
-    }
+  public void setContactNumber(String contactNumber) {
+    this.contactNumber = contactNumber;
+  }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
+  public String getSalt() {
+    return salt;
+  }
 
-    public String getContactNumber() {
-        return contactNumber;
-    }
+  public void setSalt(String salt) {
+    this.salt = salt;
+  }
 
-    public void setContactNumber(String contactNumber) {
-        this.contactNumber = contactNumber;
-    }
+  public List<CustomerAuthEntity> getAuthTokens() {
+    return authTokens;
+  }
 
-    public String getSalt() {
-        return salt;
-    }
+  public void setAuthTokens(List<CustomerAuthEntity> authTokens) {
+    this.authTokens = authTokens;
+  }
 
-    public void setSalt(String salt) {
-        this.salt = salt;
-    }
+  public List<AddressEntity> getAddresses() {
+    return address;
+  }
 
-    public List<CustomerAuthEntity> getAuthTokens() {
-        return authTokens;
-    }
+  public void setAddresses(List<AddressEntity> addresses) {
+    this.address = addresses;
+  }
 
-    public void setAuthTokens(List<CustomerAuthEntity> authTokens) {
-        this.authTokens = authTokens;
-    }
-
-    public List<AddressEntity> getAddresses() {
-        return address;
-    }
-
-    public void setAddresses(List<AddressEntity> addresses) {
-        this.address = addresses;
-    }
-
-    public String toString() {
-        return "CustomerEntity{" +
-                "id=" + id +
-                ", uuid='" + uuid + '\'' +
-                ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", contactNumber='" + contactNumber + '\'' +
-                ", salt='" + salt + '\'' +
-                '}';
-    }
-
-
-
+  public String toString() {
+    return "CustomerEntity{"
+        + "id="
+        + id
+        + ", uuid='"
+        + uuid
+        + '\''
+        + ", email='"
+        + email
+        + '\''
+        + ", password='"
+        + password
+        + '\''
+        + ", firstName='"
+        + firstName
+        + '\''
+        + ", lastName='"
+        + lastName
+        + '\''
+        + ", contactNumber='"
+        + contactNumber
+        + '\''
+        + ", salt='"
+        + salt
+        + '\''
+        + '}';
+  }
 }

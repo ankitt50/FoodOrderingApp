@@ -14,34 +14,32 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.*;
 
+// Rest controller for handling Payment related endpoint requests
 @RestController
 public class PaymentController {
 
-    @Autowired
-    private PaymentService paymentService;
+  @Autowired private PaymentService paymentService;
 
-    /**
-     * This API endpoint returns all the payment methods added by the user.
-     * It doesn't need any parameters.
-     *
-     * @return All payment methods
-     */
-    @CrossOrigin
-    @RequestMapping(
-            method = RequestMethod.GET,
-            path = "/payment",
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE
-    )
-    public ResponseEntity<PaymentListResponse> getAllPaymentMethods() {
-        List<PaymentEntity> paymentMethods = paymentService.getAllPaymentMethods();
-        PaymentListResponse paymentListResponse = new PaymentListResponse();
-        for (PaymentEntity paymentMethod : paymentMethods) {
-            PaymentResponse paymentResponse = new PaymentResponse();
-            paymentResponse.setId(UUID.fromString(paymentMethod.getUuid()));
-            paymentResponse.setPaymentName(paymentMethod.getPaymentName());
-            paymentListResponse.addPaymentMethodsItem(paymentResponse);
-        }
-        return new ResponseEntity<>(paymentListResponse, HttpStatus.OK);
+  /**
+   * This API endpoint returns all the payment methods added by the user. It doesn't need any
+   * parameters.
+   *
+   * @return All payment methods
+   */
+  @CrossOrigin
+  @RequestMapping(
+      method = RequestMethod.GET,
+      path = "/payment",
+      produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+  public ResponseEntity<PaymentListResponse> getAllPaymentMethods() {
+    List<PaymentEntity> paymentMethods = paymentService.getAllPaymentMethods();
+    PaymentListResponse paymentListResponse = new PaymentListResponse();
+    for (PaymentEntity paymentMethod : paymentMethods) {
+      PaymentResponse paymentResponse = new PaymentResponse();
+      paymentResponse.setId(UUID.fromString(paymentMethod.getUuid()));
+      paymentResponse.setPaymentName(paymentMethod.getPaymentName());
+      paymentListResponse.addPaymentMethodsItem(paymentResponse);
     }
+    return new ResponseEntity<>(paymentListResponse, HttpStatus.OK);
+  }
 }
-

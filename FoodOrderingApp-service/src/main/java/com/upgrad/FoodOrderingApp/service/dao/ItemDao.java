@@ -8,21 +8,21 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 
+// DAO layer for the Item controller
 @Repository
 public class ItemDao {
 
+  @PersistenceContext private EntityManager entityManager;
 
-    @PersistenceContext
-    private EntityManager entityManager;
-
-
-    public ItemEntity getItemByUuid(String uuid) {
-        try {
-            return entityManager.createNamedQuery("getItemByUuid", ItemEntity.class).setParameter("uuid", uuid).getSingleResult();
-        }
-        catch (NoResultException exception) {
-            return null;
-        }
+  // get Item by Uuid
+  public ItemEntity getItemByUuid(String uuid) {
+    try {
+      return entityManager
+          .createNamedQuery("getItemByUuid", ItemEntity.class)
+          .setParameter("uuid", uuid)
+          .getSingleResult();
+    } catch (NoResultException exception) {
+      return null;
     }
-
+  }
 }

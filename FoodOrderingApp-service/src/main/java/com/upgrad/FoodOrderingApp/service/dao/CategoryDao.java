@@ -9,26 +9,29 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import java.util.List;
 
+// DAO layer for the Category controller
 @Repository
 public class CategoryDao {
-    @PersistenceContext
-    private EntityManager entityManager;
+  @PersistenceContext private EntityManager entityManager;
 
-    public CategoryEntity getCategoryByUuid(String uuid) {
-        try {
-            return entityManager.createNamedQuery("getCategoryByUuid", CategoryEntity.class).setParameter("uuid", uuid).getSingleResult();
-        }
-        catch (NoResultException exception) {
-            return null;
-        }
+  // get Category By Uuid
+  public CategoryEntity getCategoryByUuid(String uuid) {
+    try {
+      return entityManager
+          .createNamedQuery("getCategoryByUuid", CategoryEntity.class)
+          .setParameter("uuid", uuid)
+          .getSingleResult();
+    } catch (NoResultException exception) {
+      return null;
     }
+  }
 
-    public List<CategoryEntity> getAll() {
-        try {
-            return entityManager.createNamedQuery("getAll", CategoryEntity.class).getResultList();
-        }
-        catch (NoResultException exception) {
-            return null;
-        }
+  // get list of all categories
+  public List<CategoryEntity> getAll() {
+    try {
+      return entityManager.createNamedQuery("getAll", CategoryEntity.class).getResultList();
+    } catch (NoResultException exception) {
+      return null;
     }
+  }
 }

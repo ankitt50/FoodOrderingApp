@@ -11,28 +11,32 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+// Service layer for the Order controller
 @Service
 public class OrderService {
-    @Autowired
-    private OrderDao orderDao;
+  @Autowired private OrderDao orderDao;
 
-    @Transactional
-    public CouponEntity getCouponByCouponName(String couponName) {
-        return orderDao.getCouponByCouponName(couponName);
-    }
+  // get coupon by coupon name
+  @Transactional
+  public CouponEntity getCouponByCouponName(String couponName) {
+    return orderDao.getCouponByCouponName(couponName);
+  }
 
-    @Transactional
-    public CouponEntity getCouponByUuid(String uuid) {
-        return orderDao.getCouponByUuid(uuid);
-    }
+  // get Coupon By Uuid
+  @Transactional
+  public CouponEntity getCouponByUuid(String uuid) {
+    return orderDao.getCouponByUuid(uuid);
+  }
 
-    @Transactional
-    public List<OrderEntity> getPastOrdersOfUsers(CustomerEntity customerEntity) {
-        return orderDao.getPastOrdersOfUsers(customerEntity);
-    }
+  // get Past Orders Of Users
+  @Transactional
+  public List<OrderEntity> getPastOrdersOfUsers(CustomerEntity customerEntity) {
+    return orderDao.getPastOrdersOfUsers(customerEntity);
+  }
 
-    @Transactional
-    public OrderItemEntity saveOrder(OrderItemEntity orderItemEntity) {
-        return orderDao.saveOrder(orderItemEntity);
-    }
+  // save order
+  @Transactional
+  public OrderItemEntity saveOrder(OrderItemEntity orderItemEntity) {
+    return orderDao.saveOrder(orderItemEntity);
+  }
 }
