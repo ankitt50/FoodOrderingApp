@@ -112,13 +112,15 @@ public class OrderController {
 
       List<ItemQuantityResponse> itemQuantities = new ArrayList<ItemQuantityResponse>();
       for (OrderItemEntity ie : e.getOrderItemEntity()) {
+        ItemQuantityResponseItem itemQRI = new ItemQuantityResponseItem()
+                .id(UUID.fromString(ie.getItem().getUuid()))
+                .itemName(ie.getItem().getItemName())
+                .itemPrice(ie.getItem().getPrice());
+        itemQRI.setType(ItemQuantityResponseItem.TypeEnum.fromValue(ie.getItem().getType().equals("1") ? "NON_VEG" : "VEG"));
+
         itemQuantities.add(
             new ItemQuantityResponse()
-                .item(
-                    new ItemQuantityResponseItem()
-                        .id(UUID.fromString(ie.getItem().getUuid()))
-                        .itemName(ie.getItem().getItemName())
-                        .itemPrice(ie.getItem().getPrice()))
+                .item(itemQRI)
                 .price(ie.getPrice())
                 .quantity(ie.getQuantity()));
       }

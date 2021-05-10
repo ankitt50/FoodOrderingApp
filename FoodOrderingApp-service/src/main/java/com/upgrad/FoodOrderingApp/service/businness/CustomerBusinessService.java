@@ -178,7 +178,7 @@ public class CustomerBusinessService {
   // change password
   @Transactional
   public CustomerEntity updateCustomerPassword(CustomerEntity customerEntity, String password) {
-    String[] encryptedPasswordAndSalt = cryptographyProvider.encrypt(customerEntity.getPassword());
+    String[] encryptedPasswordAndSalt = cryptographyProvider.encrypt(password);
     customerEntity.setSalt(encryptedPasswordAndSalt[0]);
     customerEntity.setPassword(encryptedPasswordAndSalt[1]);
     return customerDao.updateCustomerDetails(customerEntity);

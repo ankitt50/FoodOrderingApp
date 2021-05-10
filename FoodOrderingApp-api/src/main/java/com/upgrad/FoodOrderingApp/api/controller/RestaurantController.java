@@ -128,7 +128,7 @@ public class RestaurantController {
         ItemList item = new ItemList();
         item.setId(UUID.fromString(categoryItem.getUuid()));
         item.setItemName(categoryItem.getItemName());
-        item.setItemType(ItemList.ItemTypeEnum.fromValue(categoryItem.getType()));
+        item.setItemType(ItemList.ItemTypeEnum.fromValue(categoryItem.getType().equals("1") ? "NON_VEG" : "VEG"));
         item.setPrice(categoryItem.getPrice());
         itemList.add(item);
       }
