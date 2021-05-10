@@ -20,7 +20,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.Collections;
 import java.util.UUID;
 
-// import static com.upgrad.FoodOrderingApp.service.common.ItemType.NON_VEG;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -148,9 +147,7 @@ public class CategoryControllerTest {
     final CategoriesListResponse categoriesListResponse =
         new ObjectMapper().readValue(response, CategoriesListResponse.class);
     assertNull(categoriesListResponse.getCategories());
-    //        assertEquals(Collections.emptyList(),categoriesListResponse.getCategories());
     verify(mockCategoryService, times(1)).getAll();
   }
-  //
-  //
+
 }

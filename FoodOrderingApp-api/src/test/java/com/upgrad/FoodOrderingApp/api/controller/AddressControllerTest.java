@@ -6,9 +6,7 @@ import com.upgrad.FoodOrderingApp.api.model.AddressListResponse;
 import com.upgrad.FoodOrderingApp.api.model.StatesList;
 import com.upgrad.FoodOrderingApp.api.model.StatesListResponse;
 import com.upgrad.FoodOrderingApp.service.businness.AddressBusinessService;
-// import com.upgrad.FoodOrderingApp.service.businness.AddressService;
 import com.upgrad.FoodOrderingApp.service.businness.CustomerBusinessService;
-// import com.upgrad.FoodOrderingApp.service.businness.CustomerService;
 import com.upgrad.FoodOrderingApp.service.entity.AddressEntity;
 import com.upgrad.FoodOrderingApp.service.entity.CustomerEntity;
 import com.upgrad.FoodOrderingApp.service.entity.StateEntity;
@@ -331,11 +329,6 @@ public class AddressControllerTest {
   //    // other than the customer who is currently logged in.
   @Test
   public void shouldNotDeleteAddressForWrongCustomer() throws Exception {
-    //        final CustomerEntity customerEntity = new CustomerEntity();
-    //
-    // when(mockCustomerService.checkAuthToken(anyString(),anyString())).thenReturn(customerEntity);
-    //
-    // when(mockAddressService.getAddressByUuid("82849cd5-106e-4b34-b9bf-94954c6ff527")).thenReturn(new AddressEntity())
 
     final CustomerEntity customerEntity = new CustomerEntity();
     customerEntity.setContactNumber("1234567890");
@@ -490,8 +483,6 @@ public class AddressControllerTest {
     final StateEntity stateEntity = new StateEntity();
     stateEntity.setUuid(stateUuid);
     stateEntity.setStateName("stateName");
-    //        addressEntity.setState(stateEntity);
-    //        final StateEntity stateEntity = new StateEntity(stateUuid, "stateName");
     when(mockAddressService.getAllStates()).thenReturn(Collections.singletonList(stateEntity));
 
     final String response =

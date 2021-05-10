@@ -212,13 +212,7 @@ public class OrderControllerTest {
     final OrderEntity orderEntity = new OrderEntity();
     final String orderId = UUID.randomUUID().toString();
     orderEntity.setUuid(orderId);
-    //        when(mockOrderService.saveOrder(any())).thenReturn(orderEntity);
     when(mockOrderService.saveOrder(any())).thenReturn(new OrderItemEntity());
-
-    //        final SaveOrderRequest saveOrderRequest = getSaveOrderRequest();
-    //        when(mockPaymentService.getPaymentByUUID(saveOrderRequest.getPaymentId().toString()))
-    //                .thenThrow(new PaymentMethodNotFoundException("PNF-002", "No payment method
-    // found by this id"));
 
     mockMvc
         .perform(
@@ -269,19 +263,6 @@ public class OrderControllerTest {
     //        when(mockOrderService.saveOrder(any())).thenReturn(orderEntity);
     when(mockOrderService.saveOrder(any())).thenReturn(new OrderItemEntity());
 
-    //        final CustomerEntity customerEntity = new CustomerEntity();
-    //        final String customerId = UUID.randomUUID().toString();
-    //        customerEntity.setUuid(customerId);
-    //        when(mockCustomerService.getCustomer("database_accesstoken2"))
-    //                .thenReturn(customerEntity);
-    //
-    //        final SaveOrderRequest saveOrderRequest = getSaveOrderRequest();
-    //        when(mockPaymentService.getPaymentByUUID(saveOrderRequest.getPaymentId().toString()))
-    //                .thenReturn(new PaymentEntity());
-    //        when(mockAddressService.getAddressByUUID(saveOrderRequest.getAddressId(),
-    // customerEntity))
-    //                .thenThrow(new AddressNotFoundException("ANF-003", "No address by this id"));
-
     mockMvc
         .perform(
             post("/order")
@@ -299,19 +280,6 @@ public class OrderControllerTest {
   //    // have given to deliver the order belongs to a different customer.
   @Test
   public void shouldNotSaveOrderIfUserUnauthorizedToChangeAddress() throws Exception {
-    //        final CustomerEntity customerEntity = new CustomerEntity();
-    //        final String customerId = UUID.randomUUID().toString();
-    //        customerEntity.setUuid(customerId);
-    //        when(mockCustomerService.getCustomer("database_accesstoken2"))
-    //                .thenReturn(customerEntity);
-    //
-    //        final SaveOrderRequest saveOrderRequest = getSaveOrderRequest();
-    //        when(mockPaymentService.getPaymentByUUID(saveOrderRequest.getPaymentId().toString()))
-    //                .thenReturn(new PaymentEntity());
-    //        when(mockAddressService.getAddressByUUID(saveOrderRequest.getAddressId(),
-    // customerEntity))
-    //                .thenThrow(new AuthorizationFailedException("ATHR-004", "You are not
-    // authorized to view/update/delete any one else's address"));
 
     final CustomerEntity customerEntity = new CustomerEntity();
     final String customerId = UUID.randomUUID().toString();
@@ -340,7 +308,6 @@ public class OrderControllerTest {
     final OrderEntity orderEntity = new OrderEntity();
     final String orderId = UUID.randomUUID().toString();
     orderEntity.setUuid(orderId);
-    //        when(mockOrderService.saveOrder(any())).thenReturn(orderEntity);
     when(mockOrderService.saveOrder(any())).thenReturn(new OrderItemEntity());
 
     mockMvc
@@ -360,22 +327,6 @@ public class OrderControllerTest {
   //    // you gave does not exist in the database.
   @Test
   public void shouldNotSaveOrderIfRestaurantDoesNotExists() throws Exception {
-    //        final CustomerEntity customerEntity = new CustomerEntity();
-    //        final String customerId = UUID.randomUUID().toString();
-    //        customerEntity.setUuid(customerId);
-    //        when(mockCustomerService.getCustomer("database_accesstoken2"))
-    //                .thenReturn(customerEntity);
-    //
-    //        final SaveOrderRequest saveOrderRequest = getSaveOrderRequest();
-    //        when(mockPaymentService.getPaymentByUUID(saveOrderRequest.getPaymentId().toString()))
-    //                .thenReturn(new PaymentEntity());
-    //        when(mockAddressService.getAddressByUUID(saveOrderRequest.getAddressId(),
-    // customerEntity))
-    //                .thenReturn(new AddressEntity());
-    //
-    // when(mockRestaurantService.restaurantByUUID(saveOrderRequest.getRestaurantId().toString()))
-    //                .thenThrow(new RestaurantNotFoundException("RNF-001", "No restaurant by this
-    // id"));
 
     final CustomerEntity customerEntity = new CustomerEntity();
     final String customerId = UUID.randomUUID().toString();
@@ -426,23 +377,6 @@ public class OrderControllerTest {
   //    // you gave does not exist in the database.
   @Test
   public void shouldNotSaveOrderIfCouponNotFound() throws Exception {
-    //        final CustomerEntity customerEntity = new CustomerEntity();
-    //        final String customerId = UUID.randomUUID().toString();
-    //        customerEntity.setUuid(customerId);
-    //        when(mockCustomerService.getCustomer("database_accesstoken2"))
-    //                .thenReturn(customerEntity);
-    //
-    //        final SaveOrderRequest saveOrderRequest = getSaveOrderRequest();
-    //        when(mockPaymentService.getPaymentByUUID(saveOrderRequest.getPaymentId().toString()))
-    //                .thenReturn(new PaymentEntity());
-    //        when(mockAddressService.getAddressByUUID(saveOrderRequest.getAddressId(),
-    // customerEntity))
-    //                .thenReturn(new AddressEntity());
-    //
-    // when(mockRestaurantService.restaurantByUUID(saveOrderRequest.getRestaurantId().toString()))
-    //                .thenReturn(new RestaurantEntity());
-    //        when(mockOrderService.getCouponByCouponId(saveOrderRequest.getCouponId().toString()))
-    //                .thenThrow(new CouponNotFoundException("CPF-002", "No coupon by this id"));
 
     final CustomerEntity customerEntity = new CustomerEntity();
     final String customerId = UUID.randomUUID().toString();
@@ -759,8 +693,7 @@ public class OrderControllerTest {
     stateEntity.setUuid(stateId);
 
     final String addressId = UUID.randomUUID().toString();
-    // addressId, "a/b/c",
-    //                "someLocality", "someCity", "100000", stateEntity
+
     final AddressEntity addressEntity = new AddressEntity();
     addressEntity.setUuid(addressId);
     addressEntity.setFlatBuildNumber("a/b/c");
@@ -790,8 +723,7 @@ public class OrderControllerTest {
     restaurantEntity.setRestaurantName("Famous Restaurant");
 
     final String orderId = UUID.randomUUID().toString();
-    // orderId, 200.50, couponEntity, 10.0,
-    //                orderDate, paymentEntity, customerEntity, addressEntity, restaurantEntity)
+
     OrderEntity orderEntity = new OrderEntity();
     orderEntity.setUuid(orderId);
     orderEntity.setBill(200);

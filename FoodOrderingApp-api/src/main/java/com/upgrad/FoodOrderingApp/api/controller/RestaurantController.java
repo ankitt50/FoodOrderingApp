@@ -47,7 +47,7 @@ public class RestaurantController {
   public ResponseEntity<RestaurantListResponse> getRestaurantsByName(
       @PathVariable(name = "restaurant_name") final String restaurantName)
       throws RestaurantNotFoundException {
-    if (restaurantName.isEmpty())
+    if (restaurantName == null || restaurantName.isEmpty())
       throw new RestaurantNotFoundException("RNF-003", "Restaurant name field should not be empty");
 
     RestaurantListResponse response; /* Response entity created by Swagger plugin */

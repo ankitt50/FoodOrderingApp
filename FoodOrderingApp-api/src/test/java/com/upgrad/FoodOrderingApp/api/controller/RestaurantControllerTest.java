@@ -5,7 +5,6 @@ import com.upgrad.FoodOrderingApp.api.model.RestaurantList;
 import com.upgrad.FoodOrderingApp.api.model.RestaurantListResponse;
 import com.upgrad.FoodOrderingApp.service.businness.CategoryService;
 import com.upgrad.FoodOrderingApp.service.businness.CustomerBusinessService;
-// import com.upgrad.FoodOrderingApp.service.businness.CustomerService;
 import com.upgrad.FoodOrderingApp.service.businness.ItemService;
 import com.upgrad.FoodOrderingApp.service.businness.RestaurantService;
 import com.upgrad.FoodOrderingApp.service.entity.*;
@@ -28,7 +27,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-// import static com.upgrad.FoodOrderingApp.service.common.ItemType.NON_VEG;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -62,15 +60,6 @@ public class RestaurantControllerTest {
     final RestaurantEntity restaurantEntity = getRestaurantEntity();
     when(mockRestaurantService.getRestaurantByUuid("someRestaurantId"))
         .thenReturn(restaurantEntity);
-
-    //        final CategoryEntity categoryEntity = getCategoryEntity();
-    //        when(mockCategoryService.getCategoriesByRestaurant("someRestaurantId"))
-    //                .thenReturn(Collections.singletonList(categoryEntity));
-    //
-    //        final ItemEntity itemEntity = getItemEntity();
-    //        when(mockItemService.getItemsByCategoryAndRestaurant("someRestaurantId",
-    // categoryEntity.getUuid()))
-    //                .thenReturn(Collections.singletonList(itemEntity));
 
     mockMvc
         .perform(
@@ -125,10 +114,6 @@ public class RestaurantControllerTest {
     restaurantEntityList.add(restaurantEntity);
     when(mockRestaurantService.getAllRestaurants()).thenReturn(restaurantEntityList);
 
-    //        final CategoryEntity categoryEntity = getCategoryEntity();
-    //        when(mockCategoryService.getCategoriesByRestaurant(restaurantEntity.getUuid()))
-    //                .thenReturn(Collections.singletonList(categoryEntity));
-
     final String responseString =
         mockMvc
             .perform(
@@ -157,15 +142,14 @@ public class RestaurantControllerTest {
   //    //This test case passes when you have handled the exception of trying to fetch any
   // restaurants but your restaurant name
   //    // field is empty.
-  //    @Test
+  @Test
   public void shouldNotGetRestaurantByNameIfNameIsEmpty() throws Exception {
-    when(mockRestaurantService.getRestaurantByUuid(anyString())).thenReturn(null);
 
     mockMvc
-        .perform(get("/restaurant/name/" + "").contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+        .perform(get("/restaurant/name/").contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
         .andExpect(status().isNotFound())
-        .andExpect(jsonPath("code").value("RNF-003"));
-    verify(mockRestaurantService, times(1)).getRestaurantByUuid(anyString());
+        .andExpect(jsonPath("code").value("RNF-001"));
+    verify(mockRestaurantService, times(0)).getAllRestaurants();
   }
   //
   //
@@ -180,10 +164,6 @@ public class RestaurantControllerTest {
     CategoryEntity categoryEntity = getCategoryEntity();
     categoryEntity.setRestaurants(Collections.singletonList(restaurantEntity));
     when(mockRestaurantService.getCategoryByUuid("someCategoryId")).thenReturn(categoryEntity);
-
-    //        final CategoryEntity categoryEntity = getCategoryEntity();
-    //        when(mockCategoryService.getCategoriesByRestaurant(restaurantEntity.getUuid()))
-    //                .thenReturn(Collections.singletonList(categoryEntity));
 
     final String responseString =
         mockMvc
@@ -253,10 +233,6 @@ public class RestaurantControllerTest {
     final RestaurantEntity restaurantEntity = getRestaurantEntity();
     when(mockRestaurantService.getAllRestaurants())
         .thenReturn(Collections.singletonList(restaurantEntity));
-
-    //        final CategoryEntity categoryEntity = getCategoryEntity();
-    //        when(mockCategoryService.getCategoriesByRestaurant(restaurantEntity.getUuid()))
-    //                .thenReturn(Collections.singletonList(categoryEntity));
 
     final String responseString =
         mockMvc
@@ -435,10 +411,6 @@ public class RestaurantControllerTest {
     final RestaurantEntity restaurantEntity = getRestaurantEntity();
     when(mockRestaurantService.getRestaurantByUuid(restaurantId)).thenReturn(restaurantEntity);
 
-    //        when(mockRestaurantService.updateRestaurantRating(restaurantEntity, -5.5))
-    //                .thenThrow(new InvalidRatingException("IRE-001", "Rating should be in the
-    // range of 1 to 5"));
-
     mockMvc
         .perform(
             put("/restaurant/" + restaurantId + "?customer_rating=-5")
@@ -462,10 +434,6 @@ public class RestaurantControllerTest {
 
     final RestaurantEntity restaurantEntity = getRestaurantEntity();
     when(mockRestaurantService.getRestaurantByUuid(restaurantId)).thenReturn(restaurantEntity);
-
-    //        when(mockRestaurantService.updateRestaurantRating(restaurantEntity, 5.5))
-    //                .thenThrow(new InvalidRatingException("IRE-001", "Rating should be in the
-    // range of 1 to 5"));
 
     mockMvc
         .perform(
